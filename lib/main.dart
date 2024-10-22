@@ -3,6 +3,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
 import 'components/background.dart';
+import 'components/flame_large_logo.dart';
 
 const orangeColor = Color(0xFFFEBC1E);
 const orangeColor2 = Color(0xFFFF8835);
@@ -32,5 +33,6 @@ class Flame7World extends World {
   void onLoad() {
     super.onLoad();
     add(Background());
+    add(FlameLargeLogo(width: 500));
   }
 }
