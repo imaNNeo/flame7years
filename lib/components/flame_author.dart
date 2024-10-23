@@ -3,10 +3,12 @@ import 'dart:ui' as ui;
 
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
+import 'package:flame/events.dart';
+import 'package:flame7years/effects/charging_shake_effect.dart';
 import 'package:flame7years/main.dart';
 import 'package:flutter/material.dart';
 
-class FlameAuthor extends PositionComponent {
+class FlameAuthor extends PositionComponent with TapCallbacks {
   static const _ratio = 89 / 122;
 
   FlameAuthor({
@@ -33,6 +35,17 @@ class FlameAuthor extends PositionComponent {
       _rightEye = FlameAuthorEye(),
     ]);
     nextBlinkIn = getNextBlinkIn();
+  }
+
+  @override
+  void onTapDown(TapDownEvent event) {
+    add(ShakeAndReleaseEffect(
+      onReleased: () {
+        print('Released!');
+      },
+      chargeDuration: 1.0,
+    ));
+    super.onTapDown(event);
   }
 
   @override
