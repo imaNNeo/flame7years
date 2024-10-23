@@ -9,8 +9,8 @@ import 'package:flame7years/flame7game.dart';
 import 'package:flame7years/main.dart';
 import 'package:flutter/material.dart';
 
+import 'big_flame.dart';
 import 'flame_fireball.dart';
-import 'flame_large_logo.dart';
 import 'flame_small_logo.dart';
 
 class FlameAuthor extends PositionComponent
@@ -81,7 +81,7 @@ class FlameAuthor extends PositionComponent
 
   void _fire() {
     final flameLargeLogo =
-        game.findByKeyName(FlameLargeLogo.keyName) as PositionComponent;
+        game.findByKeyName(BigFlame.keyName) as PositionComponent;
     add(ShakeAndReleaseEffect(
       onReleased: () {
         game.world.add(FlameFireball(

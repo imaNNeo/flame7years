@@ -1,6 +1,6 @@
-import 'package:flame7years/components/flame_large_logo.dart';
 import 'commits/contributions.dart';
 import 'components/background.dart';
+import 'components/big_flame.dart';
 import 'components/fire_area.dart';
 import 'components/flame_author.dart';
 import 'flame7game.dart';
@@ -21,7 +21,7 @@ class Flame7World extends World with HasGameRef<Flame7Game> {
       width: 60,
       position: Vector2(160, -300),
     ));
-    add(FlameLargeLogo(width: 500));
+    add(BigFlame(width: 500));
   }
 
   void addFireArea(Vector2 position, double radius, double initialIntensity) {

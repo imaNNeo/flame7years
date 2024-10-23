@@ -6,11 +6,11 @@ import 'package:flame/particles.dart';
 import 'package:flame7years/main.dart';
 import 'package:flutter/material.dart';
 
-class FlameLargeLogo extends PositionComponent {
+class BigFlame extends PositionComponent {
   static const _ratio = 994 / 321;
   static const keyName = 'main_large_logo';
 
-  FlameLargeLogo({
+  BigFlame({
     double width = 994,
   }) : super(
           size: Vector2(width, width / _ratio),
