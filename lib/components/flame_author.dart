@@ -16,7 +16,7 @@ class FlameAuthor extends PositionComponent {
   }) : super(
           size: Vector2(width, width / _ratio),
           position: position,
-          anchor: Anchor.center,
+          anchor: const Anchor(0.5, 0.6352),
         );
 
   late FlameAuthorEye _leftEye, _rightEye;
@@ -89,8 +89,7 @@ class FlameAuthor extends PositionComponent {
   void update(double dt) {
     super.update(dt);
     _leftEye.position = Vector2(size.x * 0.22, size.y * 0.685);
-    _rightEye.position = Vector2(size.x * 0.42, size.y * 0.685);
-
+    _rightEye.position = Vector2(size.x * 0.44, size.y * 0.685);
     nextBlinkIn -= dt;
     if (nextBlinkIn <= 0) {
       _leftEye.blink();
@@ -109,7 +108,7 @@ class FlameAuthorEye extends PositionComponent with ParentIsA<FlameAuthor> {
   @override
   void update(double dt) {
     super.update(dt);
-    size = Vector2(parent.size.x * 0.07, parent.size.y * 0.10);
+    size = Vector2(parent.size.x * 0.1, parent.size.y * 0.16);
   }
 
   @override
@@ -131,11 +130,14 @@ class FlameAuthorEye extends PositionComponent with ParentIsA<FlameAuthor> {
         EffectController(
           duration: 0.1,
           repeatCount: 1,
-          onMax: () => add(ScaleEffect.to(
+          onMax: () => add(
+            ScaleEffect.to(
               Vector2(1, 1),
               EffectController(
                 duration: 0.1,
-              ))),
+              ),
+            ),
+          ),
         ),
       ),
     );
