@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/particles.dart';
+import 'package:flame7years/flame7world.dart';
 import 'package:flame7years/main.dart';
 import 'package:flutter/material.dart';
 

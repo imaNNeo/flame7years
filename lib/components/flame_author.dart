@@ -5,6 +5,7 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'package:flame7years/effects/charging_shake_effect.dart';
+import 'package:flame7years/flame7game.dart';
 import 'package:flame7years/main.dart';
 import 'package:flutter/material.dart';
 
