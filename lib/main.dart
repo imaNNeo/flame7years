@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
+import 'package:flame7years/components/fire_area.dart';
 import 'package:flutter/material.dart';
 
 import 'components/background.dart';
@@ -29,15 +30,26 @@ class Flame7Game extends FlameGame<Flame7World> {
         );
 }
 
-class Flame7World extends World {
+class Flame7World extends World with HasGameRef<Flame7Game> {
+  final List<FireArea> _fireAreas = [];
+
   @override
   void onLoad() {
     super.onLoad();
     add(Background());
     add(FlameAuthor(
       width: 60,
-      position: Vector2(0, -200),
+      position: Vector2(160, -300),
     ));
     add(FlameLargeLogo(width: 500));
+  }
+
+  void addFireArea(Vector2 position, double radius) {
+    final fireArea = FireArea(
+      position: position,
+      radius: radius,
+    );
+    add(fireArea);
+    _fireAreas.add(fireArea);
   }
 }

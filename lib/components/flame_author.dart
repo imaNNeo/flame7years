@@ -8,9 +8,12 @@ import 'package:flame7years/effects/charging_shake_effect.dart';
 import 'package:flame7years/main.dart';
 import 'package:flutter/material.dart';
 
+import 'flame_fireball.dart';
+import 'flame_large_logo.dart';
 import 'flame_small_logo.dart';
 
-class FlameAuthor extends PositionComponent with TapCallbacks {
+class FlameAuthor extends PositionComponent
+    with TapCallbacks, HasGameRef<Flame7Game> {
   static const _ratio = 89 / 122;
 
   FlameAuthor({
@@ -21,6 +24,7 @@ class FlameAuthor extends PositionComponent with TapCallbacks {
           size: Vector2(width, width / _ratio),
           position: position,
           anchor: const Anchor(0.5, 0.6352),
+          priority: 10,
         );
 
   late FlameAuthorEye _leftEye, _rightEye;
@@ -29,9 +33,19 @@ class FlameAuthor extends PositionComponent with TapCallbacks {
 
   double getNextBlinkIn() => 4 + 4 * Random().nextDouble();
 
+  late final Timer _testTimer;
+
   @override
   void onLoad() {
     super.onLoad();
+    _testTimer = Timer(
+      2.0,
+      onTick: () {
+        _fire();
+      },
+      repeat: true,
+      autoStart: true,
+    );
     addAll([
       FlameSmallLogo(
         color: authorColor,
@@ -46,18 +60,14 @@ class FlameAuthor extends PositionComponent with TapCallbacks {
 
   @override
   void onTapDown(TapDownEvent event) {
-    add(ShakeAndReleaseEffect(
-      onReleased: () {
-        print('Released!');
-      },
-      chargeDuration: 1.0,
-    ));
+    _fire();
     super.onTapDown(event);
   }
 
   @override
   void update(double dt) {
     super.update(dt);
+    _testTimer.update(dt);
     _leftEye.position = Vector2(size.x * 0.22, size.y * 0.685);
     _rightEye.position = Vector2(size.x * 0.44, size.y * 0.685);
     nextBlinkIn -= dt;
@@ -66,6 +76,27 @@ class FlameAuthor extends PositionComponent with TapCallbacks {
       _rightEye.blink();
       nextBlinkIn = getNextBlinkIn();
     }
+  }
+
+  void _fire() {
+    final flameLargeLogo =
+        game.findByKeyName(FlameLargeLogo.keyName) as PositionComponent;
+    add(ShakeAndReleaseEffect(
+      onReleased: () {
+        game.world.add(FlameFireball(
+          position: absolutePosition,
+          target: flameLargeLogo.positionOfAnchor(
+            Anchor(
+              Random().nextDouble(),
+              Random().nextDouble(),
+            ),
+          ),
+          size: Vector2.all(22),
+          speed: 200,
+        ));
+      },
+      chargeDuration: 1.0,
+    ));
   }
 }
 

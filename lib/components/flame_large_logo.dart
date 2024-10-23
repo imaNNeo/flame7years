@@ -8,12 +8,14 @@ import 'package:flutter/material.dart';
 
 class FlameLargeLogo extends PositionComponent {
   static const _ratio = 994 / 321;
+  static const keyName = 'main_large_logo';
 
   FlameLargeLogo({
     double width = 994,
   }) : super(
           size: Vector2(width, width / _ratio),
           anchor: Anchor.center,
+          key: ComponentKey.named(keyName),
         );
 
   final logoLeftPoints = [
