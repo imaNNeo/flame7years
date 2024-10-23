@@ -34,7 +34,7 @@ class FlameFireball extends PositionComponent with ParentIsA<Flame7World> {
           onMax: () {
             onReachedTarget?.call();
             removeFromParent();
-            parent.addFireArea(position, size.x * 2);
+            parent.addFireArea(position, size.x * 2, size.x * 0.03);
           },
         ),
       ),
