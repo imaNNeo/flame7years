@@ -2,7 +2,9 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
+import 'package:flame/particles.dart';
 import 'package:flame7years/flame7world.dart';
+import 'package:flame7years/main.dart';
 import 'package:flutter/material.dart';
 
 import 'big_flame_points.dart';
@@ -28,12 +30,9 @@ class BigFlame extends PositionComponent with ParentIsA<Flame7World> {
     _timer = Timer(
       0.05,
       onTick: () {
-        // if (intensity == 0) {
-        //   return;
-        // }
-        // add(_particles());
-        // add(_particles());
-        // add(_particles());
+        add(_particles());
+        add(_particles());
+        add(_particles());
       },
       repeat: true,
     );
@@ -47,125 +46,130 @@ class BigFlame extends PositionComponent with ParentIsA<Flame7World> {
   Vector2 bigFlamePointToWorldPosition(BigFlamePoint point) =>
       localToParent(bigFlamePointToLocalPosition(point));
 
-  // ParticleSystemComponent _particles() => ParticleSystemComponent(
-  //       particle: Particle.generate(
-  //         count: showingPoints.length ~/ 2,
-  //         lifespan: (Random().nextDouble()) + 0.5,
-  //         generator: (i) {
-  //           final displacementThreshold = Vector2(5, 5);
-  //           final randomDisplacement = Vector2(
-  //             (Random().nextDouble() * displacementThreshold.x) -
-  //                 displacementThreshold.x / 2,
-  //             (Random().nextDouble() * displacementThreshold.y) -
-  //                 displacementThreshold.y / 2,
-  //           );
-  //           final point = bigFlamePointToLocalPosition(showingPoints.random()) +
-  //               randomDisplacement;
-  //           final startColor = Color.lerp(
-  //             orangeColor,
-  //             redColor,
-  //             Random().nextDouble(),
-  //           );
-  //           final endColor = Color.lerp(
-  //             orangeColor2,
-  //             redColor,
-  //             Random().nextDouble(),
-  //           );
-  //
-  //           final particleSize = Random().nextDouble() * 3 + 2;
-  //
-  //           final particleSizeTween = TweenSequence(
-  //             [
-  //               TweenSequenceItem(
-  //                 tween: Tween<double>(begin: 0, end: particleSize),
-  //                 weight: 0.2,
-  //               ),
-  //               TweenSequenceItem(
-  //                 tween: Tween<double>(
-  //                   begin: particleSize,
-  //                   end: particleSize,
-  //                 ),
-  //                 weight: 0.6,
-  //               ),
-  //               TweenSequenceItem(
-  //                 tween: Tween<double>(begin: particleSize, end: 0.8),
-  //                 weight: 0.2,
-  //               ),
-  //             ],
-  //           );
-  //
-  //           const xAccelerationRange = 50;
-  //           final flameAngle = Random().nextDouble() * pi * 2;
-  //
-  //           final type = Random().nextDouble() < 0.003
-  //               ? ParticleType.sparkle
-  //               : [
-  //                   ParticleType.circle,
-  //                   ParticleType.arc,
-  //                 ].random();
-  //           return AcceleratedParticle(
-  //             acceleration: Vector2(
-  //                   (Random().nextDouble() * xAccelerationRange) -
-  //                       (xAccelerationRange / 2),
-  //                   switch (type) {
-  //                     ParticleType.circle || ParticleType.arc => -100,
-  //                     ParticleType.sparkle => -900,
-  //                   },
-  //                 ) *
-  //                 intensity,
-  //             position: point,
-  //             child: ComputedParticle(renderer: (canvas, particle) {
-  //               final color = Color.lerp(
-  //                 startColor,
-  //                 endColor,
-  //                 particle.progress,
-  //               )!;
-  //               final size =
-  //                   particleSizeTween.transform(particle.progress) * intensity;
-  //
-  //               final reverseProgress = 1 - particle.progress;
-  //               switch (type) {
-  //                 case ParticleType.circle:
-  //                   canvas.drawCircle(
-  //                     Offset.zero,
-  //                     size,
-  //                     Paint()
-  //                       ..color = color.withOpacity(
-  //                         reverseProgress,
-  //                       ),
-  //                   );
-  //                   break;
-  //                 case ParticleType.arc:
-  //                   canvas.drawArc(
-  //                     Rect.fromCircle(
-  //                       center: Offset.zero,
-  //                       radius: particleSizeTween.transform(particle.progress),
-  //                     ),
-  //                     flameAngle,
-  //                     1 * pi,
-  //                     false,
-  //                     Paint()
-  //                       ..color = color.withOpacity(reverseProgress)
-  //                       ..strokeWidth = size
-  //                       ..style = PaintingStyle.stroke,
-  //                   );
-  //                   break;
-  //                 case ParticleType.sparkle:
-  //                   canvas.drawCircle(
-  //                     Offset.zero,
-  //                     2,
-  //                     Paint()
-  //                       ..color = orangeColor.withOpacity(
-  //                         reverseProgress,
-  //                       ),
-  //                   );
-  //                   break;
-  //               }
-  //             }),
-  //           );
-  //         },
-  //       ),
-  //     );
+  ParticleSystemComponent _particles() => ParticleSystemComponent(
+        particle: Particle.generate(
+          count: showingPoints.length ~/ 2,
+          lifespan: (Random().nextDouble()) + 0.5,
+          generator: (i) {
+            final displacementThreshold = Vector2(5, 5);
+            final randomDisplacement = Vector2(
+              (Random().nextDouble() * displacementThreshold.x) -
+                  displacementThreshold.x / 2,
+              (Random().nextDouble() * displacementThreshold.y) -
+                  displacementThreshold.y / 2,
+            );
+            final flamePoint = showingPoints.random();
+            final position =
+                bigFlamePointToLocalPosition(flamePoint) + randomDisplacement;
+            final startColor = Color.lerp(
+              orangeColor,
+              redColor,
+              Random().nextDouble(),
+            );
+            final endColor = Color.lerp(
+              orangeColor2,
+              redColor,
+              Random().nextDouble(),
+            );
+
+            final particleSize = Random().nextDouble() * 3 + 2;
+
+            final particleSizeTween = TweenSequence(
+              [
+                TweenSequenceItem(
+                  tween: Tween<double>(begin: 0, end: particleSize),
+                  weight: 0.2,
+                ),
+                TweenSequenceItem(
+                  tween: Tween<double>(
+                    begin: particleSize,
+                    end: particleSize,
+                  ),
+                  weight: 0.6,
+                ),
+                TweenSequenceItem(
+                  tween: Tween<double>(begin: particleSize, end: 0.8),
+                  weight: 0.2,
+                ),
+              ],
+            );
+
+            const xAccelerationRange = 50;
+            final flameAngle = Random().nextDouble() * pi * 2;
+
+            final type = Random().nextDouble() < 0.003
+                ? ParticleType.sparkle
+                : [
+                    ParticleType.circle,
+                    ParticleType.arc,
+                  ].random();
+            final intensity = parent.getBigFlamePointIntensity(flamePoint) * 0.8;
+            return AcceleratedParticle(
+              acceleration: Vector2(
+                    (Random().nextDouble() * xAccelerationRange) -
+                        (xAccelerationRange / 2),
+                    switch (type) {
+                      ParticleType.circle || ParticleType.arc => -100,
+                      ParticleType.sparkle => -900,
+                    },
+                  ) *
+                  intensity,
+              position: position,
+              child: ComputedParticle(renderer: (canvas, particle) {
+                if (intensity <= 0.1) {
+                  return;
+                }
+                final color = Color.lerp(
+                  startColor,
+                  endColor,
+                  particle.progress,
+                )!;
+                final size =
+                    particleSizeTween.transform(particle.progress) * intensity;
+
+                final reverseProgress = 1 - particle.progress;
+                switch (type) {
+                  case ParticleType.circle:
+                    canvas.drawCircle(
+                      Offset.zero,
+                      size,
+                      Paint()
+                        ..color = color.withOpacity(
+                          reverseProgress,
+                        ),
+                    );
+                    break;
+                  case ParticleType.arc:
+                    canvas.drawArc(
+                      Rect.fromCircle(
+                        center: Offset.zero,
+                        radius: particleSizeTween.transform(particle.progress),
+                      ),
+                      flameAngle,
+                      1 * pi,
+                      false,
+                      Paint()
+                        ..color = color.withOpacity(reverseProgress)
+                        ..strokeWidth = size
+                        ..style = PaintingStyle.stroke,
+                    );
+                    break;
+                  case ParticleType.sparkle:
+                    canvas.drawCircle(
+                      Offset.zero,
+                      2,
+                      Paint()
+                        ..color = orangeColor.withOpacity(
+                          reverseProgress,
+                        ),
+                    );
+                    break;
+                }
+              }),
+            );
+          },
+        ),
+      );
 
   @override
   void render(Canvas canvas) {
@@ -329,7 +333,8 @@ class BigFlame extends PositionComponent with ParentIsA<Flame7World> {
     if (minIntensity == maxIntensity) {
       // Select a random point if all intensities are the same
       return bigFlamePointToWorldPosition(
-        pointsWithIntensities[Random().nextInt(pointsWithIntensities.length)].$1,
+        pointsWithIntensities[Random().nextInt(pointsWithIntensities.length)]
+            .$1,
       );
     }
 
@@ -342,7 +347,7 @@ class BigFlame extends PositionComponent with ParentIsA<Flame7World> {
     // Step 4: Normalize the weights (sum to 1)
     double totalWeight = weights.reduce((a, b) => a + b);
     List<double> normalizedWeights =
-    weights.map((w) => w / totalWeight).toList();
+        weights.map((w) => w / totalWeight).toList();
 
     // Step 5: Generate a random value between 0 and 1
     double randomValue = Random().nextDouble();
