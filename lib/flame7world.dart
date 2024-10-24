@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flame/effects.dart';
+import 'package:flame7years/components/animationphases/phase_observer.dart';
 import 'package:flame7years/components/big_flame_points.dart';
 
 import 'commits/contributions.dart';
@@ -13,7 +14,8 @@ import 'components/author/flame_author.dart';
 import 'flame7game.dart';
 import 'package:flame/components.dart';
 
-class Flame7World extends World with HasGameRef<Flame7Game>, PhaseManager {
+class Flame7World extends World
+    with HasGameRef<Flame7Game>, PhaseManager, PhaseObserver {
   final Map<int, FireArea> _fireAreas = {};
 
   final Map<BigFlamePoint, double> _pointsIntensity = {};
@@ -24,6 +26,7 @@ class Flame7World extends World with HasGameRef<Flame7Game>, PhaseManager {
   late final BigFlame bigFlame;
 
   late final FlameAuthor _firstAuthor;
+  RectangleComponent? _tempBottomRect;
 
   @override
   void onLoad() async {
@@ -80,27 +83,8 @@ class Flame7World extends World with HasGameRef<Flame7Game>, PhaseManager {
     return _pointsIntensity[point] ?? 0.0;
   }
 
-  AnimationPhase? _previousAnimation;
-
   @override
-  void update(double dt) {
-    super.update(dt);
-
-    if (!allPhasesFinished()) {
-      final phase = game.world.currentAnimationPhase;
-      if (_previousAnimation == null) {
-        _onPhaseChanged(phase);
-        _previousAnimation = phase;
-      } else if (_previousAnimation.runtimeType != phase.runtimeType) {
-        _onPhaseChanged(phase);
-        _previousAnimation = phase;
-      }
-    }
-  }
-
-  RectangleComponent? _tempBottomRect;
-  void _onPhaseChanged(AnimationPhase phase) {
-    print('Phase changed to $phase');
+  void onPhaseChanged(AnimationPhase phase) {
     final camera = gameRef.camera;
     switch (phase) {
       case StartPhase():
@@ -109,14 +93,15 @@ class Flame7World extends World with HasGameRef<Flame7Game>, PhaseManager {
         camera.viewport.add(_tempBottomRect = RectangleComponent(
           position: Vector2(0, 600),
           size: Vector2(800, 200),
-          paint: Paint()..shader = Gradient.linear(
-            const Offset(0, 0),
-            const Offset(0, 200),
-            [
-              const Color(0x00000000),
-              const Color(0xFF000000),
-            ],
-          ),
+          paint: Paint()
+            ..shader = Gradient.linear(
+              const Offset(0, 0),
+              const Offset(0, 200),
+              [
+                const Color(0x00000000),
+                const Color(0xFF000000),
+              ],
+            ),
         ));
       case MovingToTheLogoLeftPhase():
         camera.follow(_firstAuthor);
@@ -132,12 +117,7 @@ class Flame7World extends World with HasGameRef<Flame7Game>, PhaseManager {
           EffectController(duration: 1.0),
         ));
       case MovingToTheMainPositionPhase():
-      // if (_movingTarget != phase.mainPosition) {
-      //   _movingTarget = phase.mainPosition;
-      //   moveSpeed = phase.moveSpeed;
-      // }
       case IdlePhase():
-      // _refreshLookingDirection(true);
     }
   }
 }

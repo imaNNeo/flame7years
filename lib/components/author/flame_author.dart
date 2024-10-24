@@ -7,6 +7,7 @@ import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'package:flame/particles.dart';
 import 'package:flame7years/components/animationphases/animation_phase.dart';
+import 'package:flame7years/components/animationphases/phase_observer.dart';
 import 'package:flame7years/components/big_flame.dart';
 import 'package:flame7years/components/flame_fireball.dart';
 import 'package:flame7years/components/flame_small_logo.dart';
@@ -17,8 +18,10 @@ import 'package:flutter/material.dart';
 import 'effects/author_charging_shake_effect.dart';
 
 class FlameAuthor extends PositionComponent
-    with TapCallbacks, HasGameRef<Flame7Game> {
+    with TapCallbacks, HasGameRef<Flame7Game>, PhaseObserver {
   static const _ratio = 89 / 122;
+
+  static const _largeScale = 1.75;
 
   FlameAuthor({
     double width = 60,
@@ -102,46 +105,9 @@ class FlameAuthor extends PositionComponent
     _rightEye.position = Vector2(size.x * 0.44, size.y * 0.685);
     nextBlinkIn -= dt;
     if (nextBlinkIn <= 0) {
-      _leftEye.blink();
-      _rightEye.blink();
-      nextBlinkIn = getNextBlinkIn();
+      _blink();
     }
 
-    if (!game.world.allPhasesFinished() && isFirstAuthor) {
-      final phase = game.world.currentAnimationPhase;
-      switch (phase) {
-        case StartPhase():
-          position = phase.initialPosition;
-          _refreshLookingDirection(true);
-          scale = Vector2.all(1.75);
-        case MovingToTheLogoLeftPhase():
-          if (_movingTarget != phase.logoLeftPosition) {
-            _movingTarget = phase.logoLeftPosition;
-            moveSpeed = phase.moveSpeed;
-          }
-        case MovingToTheLogoRightPhase():
-          if (_movingTarget != phase.logoRightPosition) {
-            _movingTarget = phase.logoRightPosition;
-            moveSpeed = phase.moveSpeed;
-          }
-          _refreshLookingDirection(false);
-        case MovingToTheMainPositionPhase():
-          if (_movingTarget != phase.mainPosition) {
-            if (scale.y != 1.0) {
-              add(ScaleEffect.to(
-                Vector2(_lookingAtLeft ? 1.0 : -1.0, 1.0),
-                EffectController(
-                  duration: 0.3,
-                ),
-              ));
-            }
-            _movingTarget = phase.mainPosition;
-            moveSpeed = phase.moveSpeed;
-          }
-        case IdlePhase():
-          _refreshLookingDirection(true);
-      }
-    }
     if (_movingTarget != null) {
       final diff = _movingTarget! - position;
       final distance = diff.length;
@@ -156,6 +122,12 @@ class FlameAuthor extends PositionComponent
     if (!isMoving && game.world.allPhasesFinished()) {
       _refreshLookingDirection(position.x > 0);
     }
+  }
+
+  void _blink() {
+    _leftEye.blink();
+    _rightEye.blink();
+    nextBlinkIn = getNextBlinkIn();
   }
 
   void _fire() {
@@ -223,6 +195,52 @@ class FlameAuthor extends PositionComponent
       flipHorizontally();
     } else if (!_lookingAtLeft && !isFlippedHorizontally) {
       flipHorizontally();
+    }
+  }
+
+  @override
+  void onPhaseChanged(AnimationPhase phase) {
+    switch (phase) {
+      case StartPhase():
+        position = phase.initialPosition;
+        _refreshLookingDirection(true);
+        add(ScaleEffect.to(
+          Vector2.all(_largeScale),
+          EffectController(
+            duration: 0.6,
+            curve: Curves.bounceOut,
+          ),
+          onComplete: () async {
+            await Future.delayed(const Duration(milliseconds: 300));
+            _blink();
+          },
+        ));
+      case MovingToTheLogoLeftPhase():
+        if (_movingTarget != phase.logoLeftPosition) {
+          _movingTarget = phase.logoLeftPosition;
+          moveSpeed = phase.moveSpeed;
+        }
+      case MovingToTheLogoRightPhase():
+        if (_movingTarget != phase.logoRightPosition) {
+          _movingTarget = phase.logoRightPosition;
+          moveSpeed = phase.moveSpeed;
+        }
+        _refreshLookingDirection(false);
+      case MovingToTheMainPositionPhase():
+        if (_movingTarget != phase.mainPosition) {
+          if (scale.y != 1.0) {
+            add(ScaleEffect.to(
+              Vector2(_lookingAtLeft ? 1.0 : -1.0, 1.0),
+              EffectController(
+                duration: 0.3,
+              ),
+            ));
+          }
+          _movingTarget = phase.mainPosition;
+          moveSpeed = phase.moveSpeed;
+        }
+      case IdlePhase():
+        _refreshLookingDirection(true);
     }
   }
 }
