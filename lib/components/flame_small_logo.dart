@@ -1,5 +1,3 @@
-import 'dart:ui' as ui;
-
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
@@ -17,9 +15,12 @@ class FlameSmallLogo extends PositionComponent {
 
   Color color;
 
+  late Paint shapePaint;
+
   @override
   void onLoad() {
     super.onLoad();
+    shapePaint = Paint()..color = color;
   }
 
   @override
@@ -27,24 +28,7 @@ class FlameSmallLogo extends PositionComponent {
     super.render(canvas);
     canvas.save();
     canvas.scale(size.x / 89, size.y / 122);
-    final gradientPaint = Paint()
-      ..shader = ui.Gradient.radial(
-        const Offset(50.8726, 83.9879),
-        52.7141, // Radius
-        [Colors.white.withOpacity(0), Colors.white.withOpacity(0.29)],
-      );
-    final circlePath = Path()
-      ..addOval(
-        Rect.fromCircle(
-          center: const Offset(44.4858, 77.5139),
-          radius: 44.4858,
-        ),
-      );
-    canvas.drawPath(circlePath, gradientPaint);
-
     final combinedPath = Path();
-
-    final whiteFlamePaint = Paint()..color = color;
     final flamePath1 = Path()
       ..moveTo(29.3218, 64.7105)
       ..cubicTo(54.3318, 39.4949, 31.7809, 0, 31.7809, 0)
@@ -73,7 +57,7 @@ class FlameSmallLogo extends PositionComponent {
       ..cubicTo(33.4081, 121.999, 23.2686, 117.94, 15.4772, 111.228);
     combinedPath.addPath(flamePath3, Offset.zero);
 
-    canvas.drawPath(combinedPath, whiteFlamePaint);
+    canvas.drawPath(combinedPath, shapePaint);
     canvas.restore();
   }
 }

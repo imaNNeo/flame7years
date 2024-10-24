@@ -39,6 +39,7 @@ class FlameAuthor extends PositionComponent
   final ui.Color authorColor;
   late double nextBlinkIn;
 
+  late final FlameSmallLogo mainLogo;
   late final FlameSmallLogo overlayLogo;
 
   final bool isFirstAuthor;
@@ -75,7 +76,7 @@ class FlameAuthor extends PositionComponent
       autoStart: true,
     );
     addAll([
-      FlameSmallLogo(
+      mainLogo = FlameSmallLogo(
         color: authorColor,
         width: size.x,
         anchor: Anchor.topLeft,
@@ -213,6 +214,27 @@ class FlameAuthor extends PositionComponent
     ));
   }
 
+  void _shakeAndReplicate() {
+    add(SequenceEffect([
+      AuthorReplicateAnimation1(EffectController(
+        duration: 0.3,
+      )),
+      AuthorReplicateAnimation2(EffectController(
+        duration: 0.2,
+        atMaxDuration: 0.3,
+      )),
+    ]));
+    add(
+      ShakeEffect(
+        controller: EffectController(
+          duration: 0.6,
+          startDelay: 0.3,
+        ),
+        intensity: 15,
+      ),
+    );
+  }
+
   @override
   void onPhaseChanged(AnimationPhase phase) {
     switch (phase) {
@@ -224,6 +246,9 @@ class FlameAuthor extends PositionComponent
           _movingTarget = phase.logoLeftPosition;
           moveSpeed = phase.moveSpeed;
         }
+      case ShowingTheFlameLogoPhase():
+        _shakeAndReplicate();
+        break;
       case MovingToTheLogoRightPhase():
         if (_movingTarget != phase.logoRightPosition) {
           _movingTarget = phase.logoRightPosition;
@@ -291,5 +316,86 @@ class FlameAuthorEye extends PositionComponent with ParentIsA<FlameAuthor> {
         ),
       ),
     );
+  }
+}
+
+class AuthorReplicateAnimation1 extends Effect with EffectTarget<FlameAuthor> {
+  AuthorReplicateAnimation1(super.controller);
+
+  late Color shapeStartColor;
+
+  @override
+  void onMount() {
+    super.onMount();
+    shapeStartColor = target.mainLogo.shapePaint.color;
+  }
+
+  @override
+  void apply(double progress) {
+    target.mainLogo.shapePaint.color = Color.lerp(
+      shapeStartColor,
+      shapeStartColor.withOpacity(0.0),
+      progress,
+    )!;
+  }
+}
+
+class AuthorReplicateAnimation2 extends Effect with EffectTarget<FlameAuthor> {
+  AuthorReplicateAnimation2(super.controller);
+
+  @override
+  void onStart() {
+    target.mainLogo.shapePaint.style = PaintingStyle.stroke;
+    target.mainLogo.shapePaint.strokeWidth = 0;
+    target.mainLogo.shapePaint.color = Colors.white;
+    super.onStart();
+  }
+
+  @override
+  void apply(double progress) {
+    target.mainLogo.shapePaint.strokeWidth = lerpDouble(0, 3, progress)!;
+  }
+
+  @override
+  void onFinish() {
+    target.mainLogo.shapePaint.style = PaintingStyle.fill;
+    super.onFinish();
+  }
+}
+
+class ShakeEffect extends Effect with EffectTarget<PositionProvider> {
+  final double intensity; // How strong the shake should be
+  final Random random = Random();
+
+  late Vector2 initialPosition;
+
+  ShakeEffect({
+    required EffectController controller,
+    this.intensity = 10.0, // Default intensity
+  }) : super(controller);
+
+  @override
+  void onStart() {
+    initialPosition = target.position.clone();
+    super.onStart();
+  }
+
+  @override
+  void apply(double progress) {
+    // Use a sine function to make the shaking less abrupt and smoother
+    final double shakeFactor = sin(progress * pi * 4) * (1 - progress);
+
+    double offsetX = (random.nextDouble() * 2 - 1) * intensity * shakeFactor;
+    double offsetY = (random.nextDouble() * 2 - 1) * intensity * shakeFactor;
+
+    // Update the target's position with the shake offset
+    target.position.setFrom(initialPosition + Vector2(offsetX, offsetY));
+  }
+
+  @override
+  void reset() {
+    super.reset();
+    // Reset the position to avoid accumulating shake offsets
+    target.position.setFrom(initialPosition);
   }
 }

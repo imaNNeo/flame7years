@@ -105,9 +105,10 @@ class Flame7World extends World
         ));
       case MovingToTheLogoLeftPhase():
         camera.follow(_firstAuthor);
-      case MovingToTheLogoRightPhase():
+      case ShowingTheFlameLogoPhase():
         _tempBottomRect?.removeFromParent();
         camera.stop();
+      case MovingToTheLogoRightPhase():
         camera.viewfinder.add(ScaleEffect.to(
           Vector2.all(1.0),
           EffectController(duration: 1.0),
@@ -133,7 +134,6 @@ class CameraZoomToEffect extends Effect with EffectTarget<CameraComponent> {
 
   @override
   void onLoad() {
-    print('parent is ${parent}');
     _initialZoom = target.viewfinder.zoom;
     super.onLoad();
   }

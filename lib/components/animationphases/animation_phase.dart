@@ -35,6 +35,12 @@ class MovingToTheLogoLeftPhase extends AnimationPhase {
   final double moveSpeed;
 }
 
+class ShowingTheFlameLogoPhase extends AnimationPhase {
+  ShowingTheFlameLogoPhase({
+    required super.duration,
+  });
+}
+
 // Move the main author to the right
 class MovingToTheLogoRightPhase extends AnimationPhase {
   MovingToTheLogoRightPhase({
