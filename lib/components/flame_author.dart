@@ -28,9 +28,17 @@ class FlameAuthor extends PositionComponent
           priority: 10,
         );
 
-  late FlameAuthorEye _leftEye, _rightEye;
+  late final FlameAuthorEye _leftEye, _rightEye;
   final ui.Color authorColor;
   late double nextBlinkIn;
+
+  late final FlameSmallLogo overlayLogo;
+
+  set overlayColor(Color color) {
+    overlayLogo.color = color;
+  }
+
+  Color get overlayColor => overlayLogo.color;
 
   double getNextBlinkIn() => 4 + 4 * Random().nextDouble();
 
@@ -50,6 +58,11 @@ class FlameAuthor extends PositionComponent
     addAll([
       FlameSmallLogo(
         color: authorColor,
+        width: size.x,
+        anchor: Anchor.topLeft,
+      ),
+      overlayLogo = FlameSmallLogo(
+        color: Colors.transparent,
         width: size.x,
         anchor: Anchor.topLeft,
       ),
@@ -86,10 +99,11 @@ class FlameAuthor extends PositionComponent
     add(ShakeAndReleaseEffect(
       onReleased: () {
         game.world.add(FlameFireball(
-          position: absolutePosition,
+          position: absolutePositionOfAnchor(const Anchor(0.5, 0.9)),
           target: targetPos,
           size: Vector2.all(22),
           speed: 200,
+          priority: priority + 1,
         ));
       },
       chargeDuration: 1.0,

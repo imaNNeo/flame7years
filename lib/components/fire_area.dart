@@ -16,8 +16,7 @@ class FireArea extends PositionComponent {
           position: position,
           size: Vector2.all(radius * 2),
           anchor: Anchor.center,
-        ) {
-  }
+        );
 
   final int id;
   double _currentIntensity = 0.0;

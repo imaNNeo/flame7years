@@ -15,7 +15,7 @@ class FlameSmallLogo extends PositionComponent {
           size: Vector2(width, width / _ratio),
         );
 
-  final Color color;
+  Color color;
 
   @override
   void onLoad() {
@@ -42,6 +42,8 @@ class FlameSmallLogo extends PositionComponent {
       );
     canvas.drawPath(circlePath, gradientPaint);
 
+    final combinedPath = Path();
+
     final whiteFlamePaint = Paint()..color = color;
     final flamePath1 = Path()
       ..moveTo(29.3218, 64.7105)
@@ -50,7 +52,7 @@ class FlameSmallLogo extends PositionComponent {
       ..cubicTo(60.0673, 84.5254, 55.4407, 89.1527, 49.1412, 93.4614)
       ..cubicTo(42.5725, 88.2163, 36.3107, 81.4633, 32.3229, 73.1687)
       ..cubicTo(31.0414, 70.5033, 30.1078, 67.6227, 29.3218, 64.7105);
-    canvas.drawPath(flamePath1, whiteFlamePaint);
+    combinedPath.addPath(flamePath1, Offset.zero);
 
     final flamePath2 = Path()
       ..moveTo(43.6838, 121.993)
@@ -59,7 +61,7 @@ class FlameSmallLogo extends PositionComponent {
       ..cubicTo(68.083, 41.5671, 94.4202, 75.4348, 76.449, 108.445)
       ..cubicTo(68.3595, 116.802, 57.0261, 122, 44.4882, 122)
       ..cubicTo(44.2195, 122, 43.9513, 121.998, 43.6838, 121.993);
-    canvas.drawPath(flamePath2, whiteFlamePaint);
+    combinedPath.addPath(flamePath2, Offset.zero);
 
     final flamePath3 = Path()
       ..moveTo(15.4772, 111.228)
@@ -69,7 +71,9 @@ class FlameSmallLogo extends PositionComponent {
       ..cubicTo(42.9515, 95.0621, 68.98, 105.649, 76.3911, 108.504)
       ..cubicTo(68.3056, 116.826, 56.9964, 121.999, 44.4883, 121.999)
       ..cubicTo(33.4081, 121.999, 23.2686, 117.94, 15.4772, 111.228);
-    canvas.drawPath(flamePath3, whiteFlamePaint);
+    combinedPath.addPath(flamePath3, Offset.zero);
+
+    canvas.drawPath(combinedPath, whiteFlamePaint);
     canvas.restore();
   }
 }

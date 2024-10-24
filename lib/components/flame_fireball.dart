@@ -13,7 +13,7 @@ class FlameFireball extends PositionComponent with ParentIsA<Flame7World> {
     required this.target,
     this.onReachedTarget,
     super.anchor = Anchor.center,
-    super.priority = 2,
+    super.priority,
   });
 
   final double speed;
