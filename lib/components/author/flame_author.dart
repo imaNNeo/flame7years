@@ -6,6 +6,7 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'package:flame/particles.dart';
+import 'package:flame7years/components/animationphases/animation_phase.dart';
 import 'package:flame7years/components/big_flame.dart';
 import 'package:flame7years/components/flame_fireball.dart';
 import 'package:flame7years/components/flame_small_logo.dart';
@@ -20,9 +21,10 @@ class FlameAuthor extends PositionComponent
   static const _ratio = 89 / 122;
 
   FlameAuthor({
-    double width = 89,
+    double width = 60,
     required Vector2 position,
     this.authorColor = Colors.white,
+    this.isFirstAuthor = false,
   }) : super(
           size: Vector2(width, width / _ratio),
           position: position,
@@ -36,6 +38,13 @@ class FlameAuthor extends PositionComponent
 
   late final FlameSmallLogo overlayLogo;
 
+  final bool isFirstAuthor;
+
+  double moveSpeed = 100;
+  Vector2? _movingTarget;
+
+  bool get isMoving => _movingTarget != null;
+
   set overlayColor(Color color) {
     overlayLogo.color = color;
   }
@@ -46,12 +55,17 @@ class FlameAuthor extends PositionComponent
 
   late final Timer _testTimer;
 
+  bool _lookingAtLeft = true;
+
   @override
   void onLoad() {
     super.onLoad();
     _testTimer = Timer(
       2.0,
       onTick: () {
+        if (!game.world.allPhasesFinished()) {
+          return;
+        }
         _fire();
       },
       repeat: true,
@@ -91,6 +105,56 @@ class FlameAuthor extends PositionComponent
       _leftEye.blink();
       _rightEye.blink();
       nextBlinkIn = getNextBlinkIn();
+    }
+
+    if (!game.world.allPhasesFinished() && isFirstAuthor) {
+      final phase = game.world.currentAnimationPhase;
+      switch (phase) {
+        case StartPhase():
+          position = phase.initialPosition;
+          _refreshLookingDirection(true);
+          scale = Vector2.all(1.75);
+        case MovingToTheLogoLeftPhase():
+          if (_movingTarget != phase.logoLeftPosition) {
+            _movingTarget = phase.logoLeftPosition;
+            moveSpeed = phase.moveSpeed;
+          }
+        case MovingToTheLogoRightPhase():
+          if (_movingTarget != phase.logoRightPosition) {
+            _movingTarget = phase.logoRightPosition;
+            moveSpeed = phase.moveSpeed;
+          }
+          _refreshLookingDirection(false);
+        case MovingToTheMainPositionPhase():
+          if (_movingTarget != phase.mainPosition) {
+            if (scale.y != 1.0) {
+              add(ScaleEffect.to(
+                Vector2(_lookingAtLeft ? 1.0 : -1.0, 1.0),
+                EffectController(
+                  duration: 0.3,
+                ),
+              ));
+            }
+            _movingTarget = phase.mainPosition;
+            moveSpeed = phase.moveSpeed;
+          }
+        case IdlePhase():
+          _refreshLookingDirection(true);
+      }
+    }
+    if (_movingTarget != null) {
+      final diff = _movingTarget! - position;
+      final distance = diff.length;
+      if (distance < 1) {
+        _movingTarget = null;
+      } else {
+        final direction = diff.normalized();
+        final movement = direction * moveSpeed * dt;
+        position += movement;
+      }
+    }
+    if (!isMoving && game.world.allPhasesFinished()) {
+      _refreshLookingDirection(position.x > 0);
     }
   }
 
@@ -151,6 +215,15 @@ class FlameAuthor extends PositionComponent
         ),
       ),
     ));
+  }
+
+  void _refreshLookingDirection(bool lookingAtLeft) {
+    _lookingAtLeft = lookingAtLeft;
+    if (_lookingAtLeft && isFlippedHorizontally) {
+      flipHorizontally();
+    } else if (!_lookingAtLeft && !isFlippedHorizontally) {
+      flipHorizontally();
+    }
   }
 }
 
