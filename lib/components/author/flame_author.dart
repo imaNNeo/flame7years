@@ -6,14 +6,14 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'package:flame/particles.dart';
-import 'package:flame7years/effects/charging_shake_effect.dart';
+import 'package:flame7years/components/big_flame.dart';
+import 'package:flame7years/components/flame_fireball.dart';
+import 'package:flame7years/components/flame_small_logo.dart';
 import 'package:flame7years/flame7game.dart';
 import 'package:flame7years/main.dart';
 import 'package:flutter/material.dart';
 
-import 'big_flame.dart';
-import 'flame_fireball.dart';
-import 'flame_small_logo.dart';
+import 'effects/author_charging_shake_effect.dart';
 
 class FlameAuthor extends PositionComponent
     with TapCallbacks, HasGameRef<Flame7Game> {
@@ -95,10 +95,9 @@ class FlameAuthor extends PositionComponent
   }
 
   void _fire() {
-    final bigFlame =
-        game.findByKeyName(BigFlame.keyName) as BigFlame;
+    final bigFlame = game.findByKeyName(BigFlame.keyName) as BigFlame;
     final targetPos = bigFlame.getRandomPointToFire();
-    add(ShakeAndReleaseEffect(
+    add(AuthorShakeAndReleaseEffect(
       onReleased: () {
         _burnPhosphorus();
         game.world.add(FlameFireball(

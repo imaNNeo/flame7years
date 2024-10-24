@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
-import 'package:flame7years/components/flame_author.dart';
+import 'package:flame7years/components/author/flame_author.dart';
 import 'package:flame7years/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -47,8 +47,8 @@ class ChargingShakeEffect extends Effect {
   }
 }
 
-class ShakeAndReleaseEffect extends Component with ParentIsA<FlameAuthor> {
-  ShakeAndReleaseEffect({
+class AuthorShakeAndReleaseEffect extends Component with ParentIsA<FlameAuthor> {
+  AuthorShakeAndReleaseEffect({
     this.chargeDuration = 2.0,
     this.onReleased,
   });

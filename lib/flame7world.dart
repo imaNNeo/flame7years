@@ -4,7 +4,7 @@ import 'commits/contributions.dart';
 import 'components/background.dart';
 import 'components/big_flame.dart';
 import 'components/fire_area.dart';
-import 'components/flame_author.dart';
+import 'components/author/flame_author.dart';
 import 'flame7game.dart';
 import 'package:flame/components.dart';
 
