@@ -1,9 +1,11 @@
 import 'dart:math';
 import 'dart:ui' as ui;
+import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
+import 'package:flame/particles.dart';
 import 'package:flame7years/effects/charging_shake_effect.dart';
 import 'package:flame7years/flame7game.dart';
 import 'package:flame7years/main.dart';
@@ -98,6 +100,7 @@ class FlameAuthor extends PositionComponent
     final targetPos = bigFlame.getRandomPointToFire();
     add(ShakeAndReleaseEffect(
       onReleased: () {
+        _burnPhosphorus();
         game.world.add(FlameFireball(
           position: absolutePositionOfAnchor(const Anchor(0.5, 0.9)),
           target: targetPos,
@@ -107,6 +110,47 @@ class FlameAuthor extends PositionComponent
         ));
       },
       chargeDuration: 1.0,
+    ));
+  }
+
+  void _burnPhosphorus() {
+    final particlePositionXRange = size.x;
+    const startColor = redColor;
+    const endColor = orangeColor;
+    game.world.add(ParticleSystemComponent(
+      priority: priority + 1,
+      position: absolutePosition,
+      particle: Particle.generate(
+        count: 10,
+        lifespan: 0.6,
+        generator: (i) => AcceleratedParticle(
+          position: Vector2(
+            (Random().nextDouble() * particlePositionXRange) -
+                (particlePositionXRange / 2),
+            -size.y * 0.3,
+          ),
+          speed: Vector2(
+            0,
+            -(Random().nextDouble() * 160 + 40),
+          ),
+          child: ComputedParticle(renderer: (canvas, particle) {
+            final size = lerpDouble(6.0, 0.0, particle.progress)!;
+            canvas.drawOval(
+              Rect.fromCenter(
+                center: Offset.zero,
+                width: size,
+                height: size * 2,
+              ),
+              Paint()
+                ..color = Color.lerp(
+                  startColor,
+                  endColor,
+                  particle.progress,
+                )!,
+            );
+          }),
+        ),
+      ),
     ));
   }
 }
