@@ -1,3 +1,4 @@
+import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
@@ -301,17 +302,62 @@ class BigFlame extends PositionComponent with ParentIsA<Flame7World> {
     canvas.drawPath(textPath5, textPaint);
     canvas.restore();
 
-
     for (final point in showingPoints) {
       final localPosition = bigFlamePointToLocalPosition(point);
       canvas.drawCircle(
         localPosition.toOffset(),
         4,
-        Paint()..color = Colors.red.withOpacity(
-          parent.getBigFlamePointIntensity(point).clamp(0, 1),
-        ),
+        Paint()
+          ..color = Colors.red.withOpacity(
+            parent.getBigFlamePointIntensity(point).clamp(0, 1),
+          ),
       );
     }
+  }
+
+  Vector2 getRandomPointToFire() {
+    // Step 1: Get the list of points and their intensities
+    final pointsWithIntensities = allBigFlamePoints
+        .map((point) => (point, parent.getBigFlamePointIntensity(point)))
+        .toList();
+
+    // Step 2: Find the minimum and maximum intensity
+    double minIntensity = pointsWithIntensities.map((p) => p.$2).reduce(min);
+    double maxIntensity = pointsWithIntensities.map((p) => p.$2).reduce(max);
+
+    // Handle case where all intensities are the same
+    if (minIntensity == maxIntensity) {
+      // Select a random point if all intensities are the same
+      return bigFlamePointToWorldPosition(
+        pointsWithIntensities[Random().nextInt(pointsWithIntensities.length)].$1,
+      );
+    }
+
+    // Step 3: Calculate weights inversely proportional to intensity
+    List<double> weights = pointsWithIntensities.map((p) {
+      // Use the inverse of the intensity, scaled by the max and min
+      return (maxIntensity - p.$2) + 1; // Add 1 to avoid zero weight
+    }).toList();
+
+    // Step 4: Normalize the weights (sum to 1)
+    double totalWeight = weights.reduce((a, b) => a + b);
+    List<double> normalizedWeights =
+    weights.map((w) => w / totalWeight).toList();
+
+    // Step 5: Generate a random value between 0 and 1
+    double randomValue = Random().nextDouble();
+
+    // Step 6: Select a point based on the weights
+    double cumulativeWeight = 0;
+    for (int i = 0; i < pointsWithIntensities.length; i++) {
+      cumulativeWeight += normalizedWeights[i];
+      if (randomValue < cumulativeWeight) {
+        return bigFlamePointToWorldPosition(pointsWithIntensities[i].$1);
+      }
+    }
+
+    // Fallback (this shouldn't be reached unless there's a numerical issue)
+    return bigFlamePointToWorldPosition(pointsWithIntensities.last.$1);
   }
 
   @override

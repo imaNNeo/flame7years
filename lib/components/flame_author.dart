@@ -80,18 +80,14 @@ class FlameAuthor extends PositionComponent
   }
 
   void _fire() {
-    final flameLargeLogo =
-        game.findByKeyName(BigFlame.keyName) as PositionComponent;
+    final bigFlame =
+        game.findByKeyName(BigFlame.keyName) as BigFlame;
+    final targetPos = bigFlame.getRandomPointToFire();
     add(ShakeAndReleaseEffect(
       onReleased: () {
         game.world.add(FlameFireball(
           position: absolutePosition,
-          target: flameLargeLogo.positionOfAnchor(
-            Anchor(
-              Random().nextDouble(),
-              Random().nextDouble(),
-            ),
-          ),
+          target: targetPos,
           size: Vector2.all(22),
           speed: 200,
         ));
