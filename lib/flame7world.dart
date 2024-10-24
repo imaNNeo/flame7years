@@ -36,6 +36,7 @@ class Flame7World extends World
     add(firstAuthor = FlameAuthor(
       position: Vector2(0, -400),
       isFirstAuthor: true,
+      authorEntity: communityData.topAuthors.first,
     ));
     add(bigFlame = BigFlame(width: 500));
     for (final point in allBigFlamePoints) {

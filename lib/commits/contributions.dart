@@ -513,6 +513,14 @@ ContributionDataEntity loadCommunityData() {
     }
   }
 
+  // sort by first commit index that is not 0
+  topAuthors.sort((a, b) {
+    final aIndex = a.commits.indexWhere((count) => count != 0);
+    final bIndex = b.commits.indexWhere((count) => count != 0);
+    return aIndex - bIndex;
+  });
+
+
   return ContributionDataEntity(
     dates,
     topAuthors,

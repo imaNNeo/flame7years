@@ -6,6 +6,8 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'package:flame/particles.dart';
+import 'package:flame/text.dart';
+import 'package:flame7years/commits/contributions.dart';
 import 'package:flame7years/components/animationphases/animation_phase.dart';
 import 'package:flame7years/components/animationphases/phase_observer.dart';
 import 'package:flame7years/components/big_flame.dart';
@@ -21,6 +23,7 @@ class FlameAuthor extends PositionComponent
     with PhaseObserver, HasGameRef<Flame7Game> {
   FlameAuthor({
     required Vector2 position,
+    required this.authorEntity,
     this.isFirstAuthor = false,
   }) : super(
           position: position,
@@ -30,7 +33,10 @@ class FlameAuthor extends PositionComponent
 
   final bool isFirstAuthor;
 
+  final TopAuthorEntity authorEntity;
+
   late final FlameAuthorUI _ui;
+  late final TextComponent _name;
 
   double moveSpeed = 100;
   Vector2? _movingTarget;
@@ -48,11 +54,23 @@ class FlameAuthor extends PositionComponent
       size.x * _ui.anchor.x,
       size.y * _ui.anchor.y,
     );
+    add(_name = TextComponent(
+      text: '',
+      position: Vector2(size.x / 2, size.y + 6),
+      anchor: Anchor.topCenter,
+      textRenderer: TextPaint(
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 12,
+        ),
+      ),
+    ));
     super.onLoad();
   }
 
   @override
   void onPhaseChanged(AnimationPhase phase) {
+    print('Phase changed: $phase');
     switch (phase) {
       case StartPhase():
         position = phase.initialPosition;
@@ -72,6 +90,7 @@ class FlameAuthor extends PositionComponent
           moveSpeed = phase.moveSpeed;
         }
       case IdlePhase():
+        _name.text = authorEntity.name;
       case ShowingTheFlameLogoPhase():
     }
     _ui.onPhaseChanged(phase);
@@ -91,7 +110,7 @@ class FlameAuthor extends PositionComponent
         position += movement;
       }
     }
-    if (!isMoving && game.world.allPhasesFinished()) {
+    if (!isMoving && currentPhase is IdlePhase) {
       _ui._refreshLookingDirection(position.x > 0);
     }
   }
@@ -139,7 +158,7 @@ class FlameAuthorUI extends PositionComponent
     _testTimer = Timer(
       2.0,
       onTick: () {
-        if (!game.world.allPhasesFinished()) {
+        if (parent.currentPhase is! IdlePhase) {
           return;
         }
         _fire();
