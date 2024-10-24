@@ -89,6 +89,7 @@ class FlameAuthor extends PositionComponent
       _rightEye = FlameAuthorEye(),
     ]);
     nextBlinkIn = getNextBlinkIn();
+    _runSpawnAnimation();
   }
 
   @override
@@ -198,23 +199,26 @@ class FlameAuthor extends PositionComponent
     }
   }
 
+  void _runSpawnAnimation() {
+    add(ScaleEffect.to(
+      Vector2.all(_largeScale),
+      EffectController(
+        duration: 0.6,
+        curve: Curves.bounceOut,
+      ),
+      onComplete: () async {
+        await Future.delayed(const Duration(milliseconds: 500));
+        _blink();
+      },
+    ));
+  }
+
   @override
   void onPhaseChanged(AnimationPhase phase) {
     switch (phase) {
       case StartPhase():
         position = phase.initialPosition;
         _refreshLookingDirection(true);
-        add(ScaleEffect.to(
-          Vector2.all(_largeScale),
-          EffectController(
-            duration: 0.6,
-            curve: Curves.bounceOut,
-          ),
-          onComplete: () async {
-            await Future.delayed(const Duration(milliseconds: 300));
-            _blink();
-          },
-        ));
       case MovingToTheLogoLeftPhase():
         if (_movingTarget != phase.logoLeftPosition) {
           _movingTarget = phase.logoLeftPosition;
