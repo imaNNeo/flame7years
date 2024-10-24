@@ -4,22 +4,26 @@ import 'package:flame7years/components/animationphases/phase_manager.dart';
 import 'animation_phase.dart';
 
 mixin PhaseObserver on Component {
-  late PhaseManager _phaseManager;
+  late PhaseManager phaseManager;
 
   AnimationPhase? _previousAnimation;
+
+  AnimationPhase? get currentPhase => phaseManager.allPhasesFinished()
+      ? null
+      : phaseManager.currentAnimationPhase;
 
   @override
   void onMount() {
     super.onMount();
-    _phaseManager = ancestors(includeSelf: true)
+    phaseManager = ancestors(includeSelf: true)
         .firstWhere((c) => c is PhaseManager) as PhaseManager;
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    if (!_phaseManager.allPhasesFinished()) {
-      final phase = _phaseManager.currentAnimationPhase;
+    if (!phaseManager.allPhasesFinished()) {
+      final phase = phaseManager.currentAnimationPhase;
       if (_previousAnimation == null) {
         onPhaseChanged(phase);
         _previousAnimation = phase;

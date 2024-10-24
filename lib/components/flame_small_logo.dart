@@ -6,21 +6,28 @@ class FlameSmallLogo extends PositionComponent {
 
   FlameSmallLogo({
     double width = 89,
-    this.color = Colors.white,
+    Color color = Colors.white,
     super.position,
     super.anchor = const Anchor(0.5, 0.6352),
-  }) : super(
+  }) : _color = color, super(
           size: Vector2(width, width / _ratio),
         );
 
-  Color color;
+  Color _color;
+
+  set color(Color color) {
+    _color = color;
+    shapePaint.color = color;
+  }
+
+  Color get color => _color;
 
   late Paint shapePaint;
 
   @override
   void onLoad() {
     super.onLoad();
-    shapePaint = Paint()..color = color;
+    shapePaint = Paint()..color = _color;
   }
 
   @override

@@ -25,7 +25,7 @@ class Flame7World extends World
 
   late final BigFlame bigFlame;
 
-  late final FlameAuthor _firstAuthor;
+  late final FlameAuthor firstAuthor;
   RectangleComponent? _tempBottomRect;
 
   @override
@@ -33,7 +33,7 @@ class Flame7World extends World
     super.onLoad();
     communityData = loadCommunityData();
     add(Background());
-    add(_firstAuthor = FlameAuthor(
+    add(firstAuthor = FlameAuthor(
       position: Vector2(0, -400),
       isFirstAuthor: true,
     ));
@@ -104,7 +104,7 @@ class Flame7World extends World
             ),
         ));
       case MovingToTheLogoLeftPhase():
-        camera.follow(_firstAuthor);
+        camera.follow(firstAuthor);
       case ShowingTheFlameLogoPhase():
         _tempBottomRect?.removeFromParent();
         camera.stop();

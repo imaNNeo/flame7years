@@ -18,21 +18,21 @@ mixin PhaseManager on Component {
     allPhases = [
       StartPhase(
         initialPosition: Vector2(0, -400),
-        duration: 3.0,
+        duration: 2,
         initialCameraZoom: 1.5,
       ),
       MovingToTheLogoLeftPhase(
         logoLeftPosition: Vector2(-198.5, 21.4),
-        duration: 4.0,
+        duration: 3.0,
         moveSpeed: 200,
       ),
       ShowingTheFlameLogoPhase(
-        duration: 2.0,
+        duration: 1.5,
       ),
       MovingToTheLogoRightPhase(
         logoRightPosition: Vector2(330, 21.4),
-        duration: 5.0,
-        moveSpeed: 100,
+        duration: 2.5,
+        moveSpeed: 200,
       ),
       MovingToTheMainPositionPhase(
         duration: 3.0,
