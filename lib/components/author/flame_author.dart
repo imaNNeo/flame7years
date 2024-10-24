@@ -18,16 +18,95 @@ import 'package:flutter/material.dart';
 import 'effects/author_charging_shake_effect.dart';
 
 class FlameAuthor extends PositionComponent
-    with TapCallbacks, HasGameRef<Flame7Game>, PhaseObserver {
+    with PhaseObserver, HasGameRef<Flame7Game> {
+  FlameAuthor({
+    required Vector2 position,
+    this.isFirstAuthor = false,
+  }) : super(
+          position: position,
+          anchor: Anchor.center,
+          priority: 10,
+        );
+
+  final bool isFirstAuthor;
+
+  late final FlameAuthorUI _ui;
+
+  double moveSpeed = 100;
+  Vector2? _movingTarget;
+
+  bool get isMoving => _movingTarget != null;
+
+  @override
+  void onLoad() {
+    add(_ui = FlameAuthorUI(
+      position: Vector2.zero(),
+    ));
+    size = _ui.size;
+    anchor = _ui.anchor;
+    _ui.position = Vector2(
+      size.x * _ui.anchor.x,
+      size.y * _ui.anchor.y,
+    );
+    super.onLoad();
+  }
+
+  @override
+  void onPhaseChanged(AnimationPhase phase) {
+    switch (phase) {
+      case StartPhase():
+        position = phase.initialPosition;
+      case MovingToTheLogoLeftPhase():
+        if (_movingTarget != phase.logoLeftPosition) {
+          _movingTarget = phase.logoLeftPosition;
+          moveSpeed = phase.moveSpeed;
+        }
+      case MovingToTheLogoRightPhase():
+        if (_movingTarget != phase.logoRightPosition) {
+          _movingTarget = phase.logoRightPosition;
+          moveSpeed = phase.moveSpeed;
+        }
+      case MovingToTheMainPositionPhase():
+        if (_movingTarget != phase.mainPosition) {
+          _movingTarget = phase.mainPosition;
+          moveSpeed = phase.moveSpeed;
+        }
+      case IdlePhase():
+      case ShowingTheFlameLogoPhase():
+    }
+    _ui.onPhaseChanged(phase);
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    if (_movingTarget != null) {
+      final diff = _movingTarget! - position;
+      final distance = diff.length;
+      if (distance < 1) {
+        _movingTarget = null;
+      } else {
+        final direction = diff.normalized();
+        final movement = direction * moveSpeed * dt;
+        position += movement;
+      }
+    }
+    if (!isMoving && game.world.allPhasesFinished()) {
+      _ui._refreshLookingDirection(position.x > 0);
+    }
+  }
+}
+
+class FlameAuthorUI extends PositionComponent
+    with TapCallbacks, HasGameRef<Flame7Game>, ParentIsA<FlameAuthor> {
   static const _ratio = 89 / 122;
 
   static const _largeScale = 1.75;
 
-  FlameAuthor({
+  FlameAuthorUI({
     double width = 60,
     required Vector2 position,
     this.authorColor = Colors.white,
-    this.isFirstAuthor = false,
   }) : super(
           size: Vector2(width, width / _ratio),
           position: position,
@@ -41,13 +120,6 @@ class FlameAuthor extends PositionComponent
 
   late final FlameSmallLogo mainLogo;
   late final FlameSmallLogo overlayLogo;
-
-  final bool isFirstAuthor;
-
-  double moveSpeed = 100;
-  Vector2? _movingTarget;
-
-  bool get isMoving => _movingTarget != null;
 
   set overlayColor(Color color) {
     overlayLogo.color = color;
@@ -108,21 +180,6 @@ class FlameAuthor extends PositionComponent
     nextBlinkIn -= dt;
     if (nextBlinkIn <= 0) {
       _blink();
-    }
-
-    if (_movingTarget != null) {
-      final diff = _movingTarget! - position;
-      final distance = diff.length;
-      if (distance < 1) {
-        _movingTarget = null;
-      } else {
-        final direction = diff.normalized();
-        final movement = direction * moveSpeed * dt;
-        position += movement;
-      }
-    }
-    if (!isMoving && game.world.allPhasesFinished()) {
-      _refreshLookingDirection(position.x > 0);
     }
   }
 
@@ -235,46 +292,32 @@ class FlameAuthor extends PositionComponent
     );
   }
 
-  @override
   void onPhaseChanged(AnimationPhase phase) {
     switch (phase) {
       case StartPhase():
-        position = phase.initialPosition;
         _refreshLookingDirection(true);
-      case MovingToTheLogoLeftPhase():
-        if (_movingTarget != phase.logoLeftPosition) {
-          _movingTarget = phase.logoLeftPosition;
-          moveSpeed = phase.moveSpeed;
-        }
       case ShowingTheFlameLogoPhase():
         _shakeAndReplicate();
         break;
       case MovingToTheLogoRightPhase():
-        if (_movingTarget != phase.logoRightPosition) {
-          _movingTarget = phase.logoRightPosition;
-          moveSpeed = phase.moveSpeed;
-        }
         _refreshLookingDirection(false);
       case MovingToTheMainPositionPhase():
-        if (_movingTarget != phase.mainPosition) {
-          if (scale.y != 1.0) {
-            add(ScaleEffect.to(
-              Vector2(_lookingAtLeft ? 1.0 : -1.0, 1.0),
-              EffectController(
-                duration: 0.3,
-              ),
-            ));
-          }
-          _movingTarget = phase.mainPosition;
-          moveSpeed = phase.moveSpeed;
+        if (scale.y != 1.0) {
+          add(ScaleEffect.to(
+            Vector2(_lookingAtLeft ? 1.0 : -1.0, 1.0),
+            EffectController(
+              duration: 0.3,
+            ),
+          ));
         }
       case IdlePhase():
         _refreshLookingDirection(true);
+      case MovingToTheLogoLeftPhase():
     }
   }
 }
 
-class FlameAuthorEye extends PositionComponent with ParentIsA<FlameAuthor> {
+class FlameAuthorEye extends PositionComponent with ParentIsA<FlameAuthorUI> {
   FlameAuthorEye()
       : super(
           anchor: Anchor.center,
@@ -319,7 +362,8 @@ class FlameAuthorEye extends PositionComponent with ParentIsA<FlameAuthor> {
   }
 }
 
-class AuthorReplicateAnimation1 extends Effect with EffectTarget<FlameAuthor> {
+class AuthorReplicateAnimation1 extends Effect
+    with EffectTarget<FlameAuthorUI> {
   AuthorReplicateAnimation1(super.controller);
 
   late Color shapeStartColor;
@@ -340,7 +384,8 @@ class AuthorReplicateAnimation1 extends Effect with EffectTarget<FlameAuthor> {
   }
 }
 
-class AuthorReplicateAnimation2 extends Effect with EffectTarget<FlameAuthor> {
+class AuthorReplicateAnimation2 extends Effect
+    with EffectTarget<FlameAuthorUI> {
   AuthorReplicateAnimation2(super.controller);
 
   @override

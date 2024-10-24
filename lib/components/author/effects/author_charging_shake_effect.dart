@@ -18,7 +18,7 @@ class ChargingShakeEffect extends Effect {
   final double maxIntensity;
   final Vector2 _originalPosition;
   final Random random = Random();
-  final FlameAuthor target;
+  final FlameAuthorUI target;
 
   @override
   void apply(double progress) {
@@ -47,7 +47,7 @@ class ChargingShakeEffect extends Effect {
   }
 }
 
-class AuthorShakeAndReleaseEffect extends Component with ParentIsA<FlameAuthor> {
+class AuthorShakeAndReleaseEffect extends Component with ParentIsA<FlameAuthorUI> {
   AuthorShakeAndReleaseEffect({
     this.chargeDuration = 2.0,
     this.onReleased,
