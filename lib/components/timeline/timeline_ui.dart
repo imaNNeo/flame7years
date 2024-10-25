@@ -1,12 +1,15 @@
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame7years/commits/contributions.dart';
+import 'package:flame7years/components/animationphases/animation_phase.dart';
+import 'package:flame7years/components/animationphases/phase_observer.dart';
 import 'package:flame7years/components/timeline/timeline_manager.dart';
 import 'package:flame7years/components/timeline/timeline_observer.dart';
 import 'package:flame7years/main.dart';
 import 'package:flutter/material.dart';
 
-class TimelineUI extends PositionComponent with TimelineObserver {
+class TimelineUI extends PositionComponent
+    with TimelineObserver, PhaseObserver {
   static const boxWidth = 240.0;
   static const boxHeight = 24.0;
 
@@ -27,19 +30,21 @@ class TimelineUI extends PositionComponent with TimelineObserver {
 
   late RectangleComponent _progressBox;
   late TextComponent _yearText;
+  bool isVisible = false;
 
   @override
   void onLoad() {
     super.onLoad();
+    const topPadding = 10.0;
     add(RectangleComponent(
       size: Vector2(boxWidth, boxHeight),
-      position: Vector2(0, 0),
+      position: Vector2(0, topPadding),
       anchor: Anchor.topLeft,
       paint: _boxBgPaint,
     ));
     add(_progressBox = RectangleComponent(
       size: Vector2(0, boxHeight),
-      position: Vector2(0, 0),
+      position: Vector2(0, topPadding),
       anchor: Anchor.topLeft,
       paint: _boxFgPaint,
     ));
@@ -47,7 +52,7 @@ class TimelineUI extends PositionComponent with TimelineObserver {
       text: '1st year',
       position: Vector2(
         size.x / 2,
-        -boxHeight * 0.2,
+        -boxHeight * 0.2 + topPadding,
       ),
       anchor: Anchor.bottomCenter,
       textRenderer: TextPaint(
@@ -82,5 +87,20 @@ class TimelineUI extends PositionComponent with TimelineObserver {
         EffectController(duration: stepDuration),
       ),
     );
+  }
+
+  @override
+  void renderTree(Canvas canvas) {
+    if (isVisible) {
+      super.renderTree(canvas);
+    }
+  }
+
+  @override
+  void onPhaseChanged(AnimationPhase phase) {
+    isVisible = switch (phase) {
+      IdlePhase() => true,
+      _ => false,
+    };
   }
 }
