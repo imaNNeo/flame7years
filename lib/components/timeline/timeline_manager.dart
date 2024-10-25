@@ -1,16 +1,16 @@
 import 'package:flame/components.dart';
 import 'package:flame7years/commits/contributions.dart';
 import 'package:flame7years/components/animationphases/animation_phase.dart';
-import 'package:flame7years/flame7world.dart';
+import 'package:flame7years/flame7game.dart';
 import 'package:flutter/cupertino.dart';
 
 mixin TimelineManager on Component {
-  late Flame7World flame7World;
+  late Flame7Game game;
 
   late final double totalDuration;
   static const double eachStepDuration = 1.0;
 
-  ContributionDataEntity get contributionData => flame7World.communityData;
+  ContributionDataEntity get contributionData => game.communityData;
 
   ValueNotifier<int> currentDateIndexNotifier = ValueNotifier(-1);
 
@@ -19,23 +19,23 @@ mixin TimelineManager on Component {
   @override
   void onMount() {
     super.onMount();
-    flame7World = ancestors(includeSelf: true)
-        .firstWhere((c) => c is Flame7World) as Flame7World;
+    game = ancestors(includeSelf: true)
+        .firstWhere((c) => c is Flame7Game) as Flame7Game;
 
-    totalDuration = eachStepDuration * flame7World.communityData.dates.length;
+    totalDuration = eachStepDuration * game.communityData.dates.length;
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    if (flame7World.currentPhase is! IdlePhase) {
+    if (game.currentAnimationPhase is! IdlePhase) {
       return;
     }
     _timePassed += dt;
     if (_timePassed >= eachStepDuration) {
       _timePassed = 0;
       if (currentDateIndexNotifier.value <
-          flame7World.communityData.dates.length - 1) {
+          game.communityData.dates.length - 1) {
         currentDateIndexNotifier.value++;
       }
     }

@@ -8,28 +8,25 @@ import 'package:flame7years/components/timeline/timeline_observer.dart';
 
 import 'commits/contributions.dart';
 import 'components/animationphases/animation_phase.dart';
-import 'components/animationphases/phase_manager.dart';
 import 'components/author/flame_top_author.dart';
 import 'components/background.dart';
 import 'components/big_flame.dart';
 import 'components/fire_area.dart';
 import 'components/flame_community_author.dart';
-import 'components/timeline/timeline_manager.dart';
+import 'components/timeline/timeline_ui.dart';
 import 'flame7game.dart';
 import 'package:flame/components.dart';
 
 class Flame7World extends World
     with
         HasGameRef<Flame7Game>,
-        PhaseManager,
         PhaseObserver,
-        TimelineManager,
         TimelineObserver {
   final Map<int, FireArea> _fireAreas = {};
 
   final Map<BigFlamePoint, double> _pointsIntensity = {};
 
-  late final ContributionDataEntity communityData;
+  ContributionDataEntity get communityData => game.communityData;
   int _fireAreaCounter = 0;
 
   late final BigFlame bigFlame;
@@ -54,11 +51,11 @@ class Flame7World extends World
     Vector2(-100, 340),
     Vector2(100, 340),
   ];
+  late TimelineUI timelineUI;
 
   @override
   void onLoad() async {
     super.onLoad();
-    communityData = loadCommunityData();
     add(Background());
     final firstAuthor = communityData.topAuthors.first;
     firstAuthorName = firstAuthor.name;
@@ -72,6 +69,14 @@ class Flame7World extends World
       _pointsIntensity[point] = 0.0;
     }
     game.camera.moveTo(topAliveAuthors[firstAuthorName]!.position);
+    game.camera.viewport.add(
+      timelineUI = TimelineUI(
+        position: Vector2(
+          game.size.x / 2,
+          TimelineUI.boxHeight * 6,
+        ),
+      ),
+    );
   }
 
   void addFireArea(Vector2 position, double radius, double initialIntensity) {
@@ -141,7 +146,7 @@ class Flame7World extends World
         camera.stop();
       case MovingToTheLogoRightPhase():
         camera.viewfinder.add(ScaleEffect.to(
-          Vector2.all(1.0),
+          Vector2.all(0.8),
           EffectController(duration: 1.0),
         ));
         camera.viewfinder.add(MoveToEffect(
@@ -197,6 +202,12 @@ class Flame7World extends World
     add(flameCommunityAuthor = FlameCommunityAuthor(
       entity: data.community,
     ));
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    timelineUI.position = Vector2(game.size.x / 2, 40);
   }
 }
 
