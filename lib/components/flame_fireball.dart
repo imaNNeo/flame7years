@@ -84,6 +84,9 @@ class FlameFireball extends PositionComponent with ParentIsA<Flame7World> {
   @override
   void render(Canvas canvas) {
     super.render(canvas);
+    if (size.isNaN) {
+      return;
+    }
     canvas.drawCircle(
       Offset(size.x / 2, size.y / 2),
       size.x * 0.54,

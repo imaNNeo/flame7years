@@ -24,9 +24,13 @@ class FireArea extends PositionComponent {
   void Function(FireArea value, double diff)? onIntensityChanged;
   List<BigFlamePoint> containingPoints;
 
+
   @override
   void render(Canvas canvas) {
     super.render(canvas);
+    if (size.isNaN) {
+      return;
+    }
     canvas.drawCircle(
       Offset(
         size.x / 2,
