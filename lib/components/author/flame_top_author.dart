@@ -298,6 +298,7 @@ class FlameAuthorUI extends PositionComponent
     } else {
       _refreshLookingDirection(parent.position.x > 0);
     }
+    scale = Vector2.all(0);
     add(ScaleEffect.to(
       isFirstAuthor ? Vector2.all(_largeScale) : _normalScale,
       EffectController(
@@ -305,8 +306,10 @@ class FlameAuthorUI extends PositionComponent
         curve: Curves.bounceOut,
       ),
       onComplete: () async {
-        await Future.delayed(const Duration(milliseconds: 500));
-        _blink();
+        if (isFirstAuthor) {
+          await Future.delayed(const Duration(milliseconds: 500));
+          _blink();
+        }
       },
     ));
   }
