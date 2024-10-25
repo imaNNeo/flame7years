@@ -61,7 +61,7 @@ class FireArea extends PositionComponent {
   void update(double dt) {
     super.update(dt);
     final previousIntensity = _currentIntensity;
-    _currentIntensity -= dt * 0.05;
+    _currentIntensity -= dt * 0.1;
     if (_currentIntensity <= 0) {
       _currentIntensity = 0;
     }

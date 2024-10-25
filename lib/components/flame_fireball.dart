@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/particles.dart';
@@ -34,7 +36,12 @@ class FlameFireball extends PositionComponent with ParentIsA<Flame7World> {
           onMax: () {
             onReachedTarget?.call();
             removeFromParent();
-            parent.addFireArea(position, size.x * 2, size.x * 0.03);
+            final initialIntensity = max(size.x * 0.02, 0.1);
+            parent.addFireArea(
+              position,
+              size.x * 2,
+              initialIntensity,
+            );
           },
         ),
       ),
