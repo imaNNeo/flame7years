@@ -125,7 +125,12 @@ class FlameTopAuthor extends PositionComponent
   }
 
   @override
-  void onDateChanged(ContributionDataEntity data, int dateIndex) {
+  void onDateChanged(
+    ContributionDataEntity data,
+    int dateIndex,
+    int year,
+    int month,
+  ) {
     final commitsForThisDay = authorEntity.commits[dateIndex];
     if (commitsForThisDay > 0) {
       final fireSize = squeezeValue(

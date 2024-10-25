@@ -7,7 +7,6 @@ import 'package:flame7years/main.dart';
 import 'package:flutter/material.dart';
 
 class TimelineUI extends PositionComponent with TimelineObserver {
-  static const years = 7;
   static const boxWidth = 240.0;
   static const boxHeight = 24.0;
 
@@ -62,17 +61,15 @@ class TimelineUI extends PositionComponent with TimelineObserver {
   }
 
   @override
-  void onDateChanged(ContributionDataEntity data, int dateIndex) {
+  void onDateChanged(
+    ContributionDataEntity data,
+    int dateIndex,
+    int year,
+    int month,
+  ) {
     // An extra month
-    final allDates = data.dates.length - 1;
-    int year = (dateIndex ~/ (allDates / years)) + 1;
-    if (year >= 8) {
-      year = 7;
-      return;
-    }
-    final monthNumber = (dateIndex % 12) + 1;
-    final previousMonthNumber = monthNumber - 1;
-    final currentYearProgress = monthNumber / 12;
+    final previousMonthNumber = month - 1;
+    final currentYearProgress = month / 12;
     _yearText.text =
         '$year${year == 1 ? 'st' : year == 2 ? 'nd' : year == 3 ? 'rd' : 'th'} year';
 

@@ -18,10 +18,7 @@ import 'flame7game.dart';
 import 'package:flame/components.dart';
 
 class Flame7World extends World
-    with
-        HasGameRef<Flame7Game>,
-        PhaseObserver,
-        TimelineObserver {
+    with HasGameRef<Flame7Game>, PhaseObserver, TimelineObserver {
   final Map<int, FireArea> _fireAreas = {};
 
   final Map<BigFlamePoint, double> _pointsIntensity = {};
@@ -159,7 +156,12 @@ class Flame7World extends World
   }
 
   @override
-  void onDateChanged(ContributionDataEntity data, int dateIndex) {
+  void onDateChanged(
+    ContributionDataEntity data,
+    int dateIndex,
+    int year,
+    int month,
+  ) {
     _tryToAddNewAuthors(data, dateIndex);
     _tryToAddCommunityAuthor(data, dateIndex);
   }

@@ -1,10 +1,13 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/particles.dart';
+import 'package:flame7years/commits/contributions.dart';
 import 'package:flame7years/components/animationphases/animation_phase.dart';
 import 'package:flame7years/components/animationphases/phase_observer.dart';
+import 'package:flame7years/components/timeline/timeline_observer.dart';
 import 'package:flame7years/flame7world.dart';
 import 'package:flame7years/main.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'big_flame_points.dart';
 
 class BigFlame extends PositionComponent
-    with ParentIsA<Flame7World>, PhaseObserver {
+    with ParentIsA<Flame7World>, PhaseObserver, TimelineObserver {
   static const _ratio = 994 / 321;
   static const keyName = 'main_large_logo';
 
@@ -28,6 +31,8 @@ class BigFlame extends PositionComponent
   late Timer _timer;
   final _flameLogoXPercent = 0.23;
   double clipXPercent = 0.0;
+
+  double baseIntensity = 0.0;
 
   @override
   void onLoad() {
@@ -108,8 +113,9 @@ class BigFlame extends PositionComponent
                     ParticleType.circle,
                     ParticleType.arc,
                   ].random();
-            final intensity =
-                parent.getBigFlamePointIntensity(flamePoint) * 0.8;
+
+            final intensity = baseIntensity +
+                (parent.getBigFlamePointIntensity(flamePoint) * 0.8);
             return AcceleratedParticle(
               acceleration: Vector2(
                     (Random().nextDouble() * xAccelerationRange) -
@@ -406,6 +412,25 @@ class BigFlame extends PositionComponent
     final playerPos = parent.firstAuthor.absolutePosition.x;
     final thisLeft = absolutePositionOfAnchor(Anchor.centerLeft).x;
     clipXPercent = max((playerPos - thisLeft) / size.x, _flameLogoXPercent);
+  }
+
+  @override
+  void onDateChanged(
+    ContributionDataEntity data,
+    int dateIndex,
+    int year,
+    int month,
+  ) {
+    baseIntensity = switch(year) {
+      1 => 0.0,
+      2 => 0.0,
+      3 => 0.0,
+      4 => 0.4,
+      5 => 0.6,
+      6 => 1.0,
+      7 => 1.3,
+      _ => throw StateError('Invalid year'),
+    };
   }
 }
 

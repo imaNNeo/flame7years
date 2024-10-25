@@ -2,6 +2,7 @@ import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame7years/commits/contributions.dart';
 import 'package:flame7years/components/author/flame_top_author.dart';
+import 'package:flame7years/components/timeline/timeline_manager.dart';
 import 'package:flame7years/components/timeline/timeline_observer.dart';
 import 'package:flame7years/main.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +62,16 @@ class FlameCommunityAuthor extends PositionComponent with TimelineObserver {
       ),
     ));
     _addAuthors();
+    add(TimerComponent(
+      period: TimelineManager.eachStepDuration,
+      onTick: () {
+        _currentShowingNameCounter++;
+        final showingName =
+            namesList[_currentShowingNameCounter % namesList.length];
+        changeCommunityMemberName(showingName);
+      },
+      repeat: true,
+    ));
   }
 
   void _addAuthors({double totalDuration = 1.0}) async {
@@ -98,7 +109,12 @@ class FlameCommunityAuthor extends PositionComponent with TimelineObserver {
   }
 
   @override
-  void onDateChanged(ContributionDataEntity data, int dateIndex) {
+  void onDateChanged(
+    ContributionDataEntity data,
+    int dateIndex,
+    int year,
+    int month,
+  ) {
     final commitsForThisDay = entity.commits[dateIndex];
     if (commitsForThisDay > 0) {
       final fireSize = squeezeValue(
@@ -111,8 +127,5 @@ class FlameCommunityAuthor extends PositionComponent with TimelineObserver {
           20;
       _authors.random().fire(fireSize);
     }
-    _currentShowingNameCounter++;
-    final showingName = namesList[_currentShowingNameCounter % namesList.length];
-    changeCommunityMemberName(showingName);
   }
 }
