@@ -1,8 +1,10 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/effects.dart';
 import 'package:flame7years/components/animationphases/phase_observer.dart';
 import 'package:flame7years/components/big_flame_points.dart';
+import 'package:flame7years/components/timeline/timeline_observer.dart';
 
 import 'commits/contributions.dart';
 import 'components/animationphases/animation_phase.dart';
@@ -16,7 +18,12 @@ import 'flame7game.dart';
 import 'package:flame/components.dart';
 
 class Flame7World extends World
-    with HasGameRef<Flame7Game>, PhaseManager, PhaseObserver, TimelineManager {
+    with
+        HasGameRef<Flame7Game>,
+        PhaseManager,
+        PhaseObserver,
+        TimelineManager,
+        TimelineObserver {
   final Map<int, FireArea> _fireAreas = {};
 
   final Map<BigFlamePoint, double> _pointsIntensity = {};
@@ -26,18 +33,36 @@ class Flame7World extends World
 
   late final BigFlame bigFlame;
 
-  late final FlameAuthor firstAuthor;
+  final Map<String, FlameAuthor> topAliveAuthors = {};
+  late final String firstAuthorName;
+
   RectangleComponent? _tempBottomRect;
+
+  FlameAuthor get firstAuthor => topAliveAuthors[firstAuthorName]!;
+
+  List<Vector2> topAuthorsAvailableSlots = [
+    Vector2(220, -225),
+    Vector2(90, -300),
+    Vector2(-90, -300),
+    Vector2(-230, -245),
+    Vector2(-350, -200),
+    Vector2(-350, 190),
+    Vector2(-240, 280),
+    Vector2(-100, 340),
+    Vector2(100, 340),
+  ];
 
   @override
   void onLoad() async {
     super.onLoad();
     communityData = loadCommunityData();
     add(Background());
-    add(firstAuthor = FlameAuthor(
+    final firstAuthor = communityData.topAuthors.first;
+    firstAuthorName = firstAuthor.name;
+    add(topAliveAuthors[firstAuthorName] = FlameAuthor(
       position: Vector2(0, -400),
       isFirstAuthor: true,
-      authorEntity: communityData.topAuthors.first,
+      authorEntity: firstAuthor,
     ));
     add(bigFlame = BigFlame(width: 500));
     for (final point in allBigFlamePoints) {
@@ -121,6 +146,35 @@ class Flame7World extends World
         ));
       case MovingToTheMainPositionPhase():
       case IdlePhase():
+    }
+  }
+
+  @override
+  void onDateChanged(ContributionDataEntity data, int dateIndex) {
+    _tryToAddNewAuthors(data, dateIndex);
+  }
+
+  void _tryToAddNewAuthors(ContributionDataEntity data, int dateIndex) {
+    if (topAliveAuthors.length == data.topAuthors.length) {
+      return;
+    }
+
+    for (final author in data.topAuthors) {
+      if (topAliveAuthors.containsKey(author.name)) {
+        continue;
+      }
+      final nextDayCommits =
+          author.commits[min(dateIndex + 1, author.commits.length - 1)];
+      if (nextDayCommits <= 0) {
+        return;
+      }
+      final slot = topAuthorsAvailableSlots.removeAt(
+        Random().nextInt(topAuthorsAvailableSlots.length),
+      );
+      add(topAliveAuthors[author.name] = FlameAuthor(
+        position: slot,
+        authorEntity: author,
+      ));
     }
   }
 }

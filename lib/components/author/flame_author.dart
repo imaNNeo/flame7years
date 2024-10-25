@@ -55,7 +55,7 @@ class FlameAuthor extends PositionComponent
       size.y * _ui.anchor.y,
     );
     add(_name = TextComponent(
-      text: '',
+      text: isFirstAuthor ? '' : authorEntity.name,
       position: Vector2(size.x / 2, size.y + 6),
       anchor: Anchor.topCenter,
       textRenderer: TextPaint(
@@ -109,7 +109,7 @@ class FlameAuthor extends PositionComponent
         position += movement;
       }
     }
-    if (!isMoving && currentPhase is IdlePhase) {
+    if (isFirstAuthor && !isMoving && currentPhase is IdlePhase) {
       _ui._refreshLookingDirection(position.x > 0);
     }
   }
@@ -281,8 +281,13 @@ class FlameAuthorUI extends PositionComponent
   }
 
   void _runSpawnAnimation() {
+    if (parent.isFirstAuthor) {
+      _refreshLookingDirection(true);
+    } else {
+      _refreshLookingDirection(parent.position.x > 0);
+    }
     add(ScaleEffect.to(
-      Vector2.all(_largeScale),
+      parent.isFirstAuthor ? Vector2.all(_largeScale) : _normalScale,
       EffectController(
         duration: 0.6,
         curve: Curves.bounceOut,
@@ -315,7 +320,12 @@ class FlameAuthorUI extends PositionComponent
     );
   }
 
+  Vector2 get _normalScale => Vector2(_lookingAtLeft ? 1.0 : -1.0, 1.0);
+
   void onPhaseChanged(AnimationPhase phase) {
+    if (!parent.isFirstAuthor) {
+      return;
+    }
     switch (phase) {
       case StartPhase():
         _refreshLookingDirection(true);
@@ -327,7 +337,7 @@ class FlameAuthorUI extends PositionComponent
       case MovingToTheMainPositionPhase():
         if (scale.y != 1.0) {
           add(ScaleEffect.to(
-            Vector2(_lookingAtLeft ? 1.0 : -1.0, 1.0),
+            _normalScale,
             EffectController(
               duration: 0.3,
             ),
