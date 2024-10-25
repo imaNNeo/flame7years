@@ -51,10 +51,12 @@ class AuthorShakeAndReleaseEffect extends Component with ParentIsA<FlameAuthorUI
   AuthorShakeAndReleaseEffect({
     this.chargeDuration = 2.0,
     this.onReleased,
+    required this.initialPosition,
   });
 
   final double chargeDuration;
   final VoidCallback? onReleased;
+  final Vector2 initialPosition;
 
   @override
   void onLoad() {
@@ -74,7 +76,7 @@ class AuthorShakeAndReleaseEffect extends Component with ParentIsA<FlameAuthorUI
           target: parent,
         ),
         MoveEffect.to(
-          parent.position.clone(),
+          initialPosition,
           EffectController(
             duration: 1.0, // Bounce back duration
             curve: Curves.elasticOut, // Simulate spring-like bounce back

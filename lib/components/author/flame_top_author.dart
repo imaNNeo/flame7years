@@ -177,6 +177,8 @@ class FlameAuthorUI extends PositionComponent
 
   bool _lookingAtLeft = true;
 
+  Vector2? _positionBeforeFirstFire;
+
   @override
   void onLoad() {
     super.onLoad();
@@ -216,6 +218,7 @@ class FlameAuthorUI extends PositionComponent
   }
 
   void fire(double fireSize) {
+    _positionBeforeFirstFire ??= position.clone();
     final bigFlame = game.findByKeyName(BigFlame.keyName) as BigFlame;
     final targetPos = bigFlame.getRandomPointToFire();
     add(AuthorShakeAndReleaseEffect(
@@ -230,6 +233,7 @@ class FlameAuthorUI extends PositionComponent
         ));
       },
       chargeDuration: 1.0,
+      initialPosition: _positionBeforeFirstFire!,
     ));
   }
 
