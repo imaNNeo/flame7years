@@ -392,17 +392,15 @@ class BigFlame extends PositionComponent
   @override
   void onPhaseChanged(AnimationPhase phase) {
     switch (phase) {
-      case StartPhase():
-        break;
-      case MovingToTheLogoLeftPhase():
-        break;
       case ShowingTheFlameLogoPhase():
         Future.delayed(const Duration(milliseconds: 500)).then((_) {
           clipXPercent = _flameLogoXPercent;
         });
         break;
+      case StartPhase():
+      case MovingToTheLogoLeftPhase():
+      case ShowingStartInfoPhase():
       case MovingToTheLogoRightPhase():
-        break;
       case MovingToTheMainPositionPhase():
       case IdlePhase():
     }
@@ -421,7 +419,7 @@ class BigFlame extends PositionComponent
     int year,
     int month,
   ) {
-    baseIntensity = switch(year) {
+    baseIntensity = switch (year) {
       1 => 0.0,
       2 => 0.0,
       3 => 0.0,

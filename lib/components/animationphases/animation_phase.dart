@@ -65,6 +65,12 @@ class MovingToTheMainPositionPhase extends AnimationPhase {
   final double moveSpeed;
 }
 
+class ShowingStartInfoPhase extends AnimationPhase {
+  ShowingStartInfoPhase({
+    required super.duration,
+  });
+}
+
 class IdlePhase extends AnimationPhase {
   IdlePhase({
     required super.duration,

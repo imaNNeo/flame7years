@@ -39,6 +39,9 @@ mixin PhaseManager on Component {
         mainPosition: Vector2(350, -160),
         moveSpeed: 100,
       ),
+      ShowingStartInfoPhase(
+        duration: 20,
+      ),
       IdlePhase(duration: 999999),
     ];
   }

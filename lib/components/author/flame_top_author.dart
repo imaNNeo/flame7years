@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 
 import 'effects/author_charging_shake_effect.dart';
 import 'lets_go_text.dart';
+import 'start_info_text.dart';
 
 double squeezeValue(
   double value,
@@ -101,6 +102,7 @@ class FlameTopAuthor extends PositionComponent
         }
       case IdlePhase():
         _name.text = authorEntity.name;
+      case ShowingStartInfoPhase():
       case ShowingTheFlameLogoPhase():
     }
     _ui.onPhaseChanged(phase);
@@ -360,8 +362,12 @@ class FlameAuthorUI extends PositionComponent
             ),
           ));
         }
-      case IdlePhase():
+      case ShowingStartInfoPhase():
         _refreshLookingDirection(true);
+        parent.add(StartInfoText(
+          duration: phase.duration,
+        ));
+      case IdlePhase():
       case MovingToTheLogoLeftPhase():
     }
   }

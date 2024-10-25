@@ -116,6 +116,26 @@ class Flame7World extends World
     return _pointsIntensity[point] ?? 0.0;
   }
 
+  void _zoomCameraToOriginalPosition({
+    double startDelay = 0.0,
+    double duration = 1.0,
+  }) => gameRef.camera.viewfinder.addAll([
+    ScaleEffect.to(
+      Vector2.all(0.8),
+      EffectController(
+        duration: duration,
+        startDelay: startDelay,
+      ),
+    ),
+    MoveToEffect(
+      Vector2.zero(),
+      EffectController(
+        duration: duration,
+        startDelay: startDelay,
+      ),
+    ),
+  ]);
+
   @override
   void onPhaseChanged(AnimationPhase phase) {
     final camera = gameRef.camera;
@@ -142,14 +162,38 @@ class Flame7World extends World
         _tempBottomRect?.removeFromParent();
         camera.stop();
       case MovingToTheLogoRightPhase():
-        camera.viewfinder.add(ScaleEffect.to(
-          Vector2.all(0.8),
-          EffectController(duration: 1.0),
+        _zoomCameraToOriginalPosition();
+      case ShowingStartInfoPhase():
+        camera.viewfinder.addAll([
+          ScaleEffect.to(
+            Vector2.all(1.75),
+            EffectController(duration: 1.0),
+          ),
+          MoveToEffect(
+            firstAuthor.position - Vector2(190, 0),
+            EffectController(duration: 1.0),
+          ),
+        ]);
+        camera.viewport.add(_tempBottomRect = RectangleComponent(
+          position: Vector2(0, 600),
+          size: Vector2(800, 200),
+          paint: Paint()
+            ..shader = Gradient.linear(
+              const Offset(0, 0),
+              const Offset(0, 200),
+              [
+                const Color(0x00000000),
+                const Color(0xFF000000),
+              ],
+            ),
         ));
-        camera.viewfinder.add(MoveToEffect(
-          Vector2.zero(),
-          EffectController(duration: 1.0),
+        final viewTextDuration = phase.duration;
+        _tempBottomRect!.add(RemoveEffect(
+          delay: viewTextDuration * 1.1,
         ));
+        _zoomCameraToOriginalPosition(
+          startDelay: viewTextDuration,
+        );
       case MovingToTheMainPositionPhase():
       case IdlePhase():
     }
