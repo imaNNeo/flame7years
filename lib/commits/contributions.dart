@@ -464,15 +464,34 @@ const _communityAuthorNames = [
 final class TopAuthorEntity {
   final String name;
   final List<int> commits;
+  final int minCommits;
+  final int maxCommits;
+  final double avgCommits;
 
-  TopAuthorEntity(this.name, this.commits);
+  TopAuthorEntity(
+    this.name,
+    this.commits,
+    this.minCommits,
+    this.maxCommits,
+    this.avgCommits,
+  );
 }
 
 final class MultipleAuthorsEntity {
   final List<String> names;
   final List<int> commits;
 
-  MultipleAuthorsEntity(this.names, this.commits);
+  final int minCommits;
+  final int maxCommits;
+  final double avgCommits;
+
+  MultipleAuthorsEntity(
+    this.names,
+    this.commits,
+    this.minCommits,
+    this.maxCommits,
+    this.avgCommits,
+  );
 }
 
 class ContributionDataEntity {
@@ -480,38 +499,63 @@ class ContributionDataEntity {
   final List<TopAuthorEntity> topAuthors;
   final MultipleAuthorsEntity community;
 
-  ContributionDataEntity(this.dates, this.topAuthors, this.community);
+  ContributionDataEntity(
+    this.dates,
+    this.topAuthors,
+    this.community,
+  );
 }
 
 ContributionDataEntity loadCommunityData() {
   final lines = _contributionData.split('\n');
   final dates = <DateTime>[];
-  final topAuthors = <TopAuthorEntity>[];
-  final communityCommits = <int>[];
+  final commitsData = <String, List<int>>{};
 
-  for (int i = 0; i < lines.length; i++) {
+  final parts = lines[0].split(',');
+  final names = parts.sublist(1);
+  for (final name in names) {
+    commitsData[name] = [];
+  }
+
+  for (int i = 1; i < lines.length; i++) {
     final line = lines[i];
     if (line.isEmpty) {
       continue;
     }
     final parts = line.split(',');
-    if (i == 0) {
-      final names = parts.sublist(1);
-      for (int j = 0; j < names.length - 1; j++) {
-        topAuthors.add(TopAuthorEntity(names[j], []));
-      }
-    } else {
-      dates.add(DateTime.parse(parts[0].replaceFirst(' ', 'T')));
-      final commits = parts.sublist(1);
-      for (int j = 0; j < commits.length; j++) {
-        if (j == commits.length - 1) {
-          communityCommits.add(int.parse(commits[j]));
-          continue;
-        }
-        topAuthors[j].commits.add(int.parse(commits[j]));
-      }
+    dates.add(DateTime.parse(parts[0].replaceFirst(' ', 'T')));
+    final commits = parts.sublist(1);
+    for (int j = 0; j < commits.length; j++) {
+      commitsData[names[j]]!.add(int.parse(commits[j]));
     }
   }
+  final communityCommits = commitsData.remove(names.last)!;
+
+  final topAuthors = commitsData.entries.map((entry) {
+    final name = entry.key;
+    final commits = entry.value;
+
+    int? min;
+    int? max;
+    int sum = 0;
+    int nonZeroCount = 0;
+    for (final commit in commits) {
+      if (commit == 0) {
+        continue;
+      }
+      if (min == null || commit < min) {
+        min = commit;
+      }
+      if (max == null || commit > max) {
+        max = commit;
+      }
+      nonZeroCount++;
+      sum += commit;
+    }
+
+    final avg = nonZeroCount == 0 ? 0.0 : sum / nonZeroCount;
+    return TopAuthorEntity(name, commits, min!, max!, avg);
+  }).toList();
 
   // sort by first commit index that is not 0
   topAuthors.sort((a, b) {
@@ -520,10 +564,35 @@ ContributionDataEntity loadCommunityData() {
     return aIndex - bIndex;
   });
 
+  int? communityMin;
+  int? communityMax;
+  int communitySum = 0;
+  int communityNonZeroCount = 0;
+  for (final commit in communityCommits) {
+    if (commit == 0) {
+      continue;
+    }
+    if (communityMin == null || commit < communityMin) {
+      communityMin = commit;
+    }
+    if (communityMax == null || commit > communityMax) {
+      communityMax = commit;
+    }
+    communityNonZeroCount++;
+    communitySum += commit;
+  }
+  final communityAvg =
+      communityNonZeroCount == 0 ? 0.0 : communitySum / communityNonZeroCount;
 
   return ContributionDataEntity(
     dates,
     topAuthors,
-    MultipleAuthorsEntity(_communityAuthorNames, communityCommits),
+    MultipleAuthorsEntity(
+      _communityAuthorNames,
+      communityCommits,
+      communityMin!,
+      communityMax!,
+      communityAvg,
+    ),
   );
 }

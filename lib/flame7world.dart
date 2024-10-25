@@ -11,11 +11,12 @@ import 'components/background.dart';
 import 'components/big_flame.dart';
 import 'components/fire_area.dart';
 import 'components/author/flame_author.dart';
+import 'components/timeline/timeline_manager.dart';
 import 'flame7game.dart';
 import 'package:flame/components.dart';
 
 class Flame7World extends World
-    with HasGameRef<Flame7Game>, PhaseManager, PhaseObserver {
+    with HasGameRef<Flame7Game>, PhaseManager, PhaseObserver, TimelineManager {
   final Map<int, FireArea> _fireAreas = {};
 
   final Map<BigFlamePoint, double> _pointsIntensity = {};

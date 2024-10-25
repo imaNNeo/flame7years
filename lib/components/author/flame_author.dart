@@ -4,7 +4,6 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
-import 'package:flame/events.dart';
 import 'package:flame/particles.dart';
 import 'package:flame/text.dart';
 import 'package:flame7years/commits/contributions.dart';
@@ -13,6 +12,7 @@ import 'package:flame7years/components/animationphases/phase_observer.dart';
 import 'package:flame7years/components/big_flame.dart';
 import 'package:flame7years/components/flame_fireball.dart';
 import 'package:flame7years/components/flame_small_logo.dart';
+import 'package:flame7years/components/timeline/timeline_observer.dart';
 import 'package:flame7years/flame7game.dart';
 import 'package:flame7years/main.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,7 @@ import 'package:flutter/material.dart';
 import 'effects/author_charging_shake_effect.dart';
 
 class FlameAuthor extends PositionComponent
-    with PhaseObserver, HasGameRef<Flame7Game> {
+    with PhaseObserver, HasGameRef<Flame7Game>, TimelineObserver {
   FlameAuthor({
     required Vector2 position,
     required this.authorEntity,
@@ -70,7 +70,6 @@ class FlameAuthor extends PositionComponent
 
   @override
   void onPhaseChanged(AnimationPhase phase) {
-    print('Phase changed: $phase');
     switch (phase) {
       case StartPhase():
         position = phase.initialPosition;
@@ -114,10 +113,35 @@ class FlameAuthor extends PositionComponent
       _ui._refreshLookingDirection(position.x > 0);
     }
   }
+
+  @override
+  void onDateChanged(ContributionDataEntity data, int dateIndex) {
+    final commitsForThisDay = authorEntity.commits[dateIndex];
+    if (commitsForThisDay > 0) {
+      final fireSize = squeezeCommitCount(
+            commitsForThisDay.toDouble(),
+            authorEntity.minCommits.toDouble(),
+            authorEntity.maxCommits.toDouble(),
+            1.0,
+            2.0,
+          ) *
+          20;
+      _ui._fire(fireSize);
+    }
+  }
+
+  double squeezeCommitCount(
+    double count,
+    double min,
+    double max,
+    double newMin,
+    double newMax,
+  ) =>
+      ((count - min) / (max - min)) * (newMax - newMin) + newMin;
 }
 
 class FlameAuthorUI extends PositionComponent
-    with TapCallbacks, HasGameRef<Flame7Game>, ParentIsA<FlameAuthor> {
+    with HasGameRef<Flame7Game>, ParentIsA<FlameAuthor> {
   static const _ratio = 89 / 122;
 
   static const _largeScale = 1.75;
@@ -148,24 +172,11 @@ class FlameAuthorUI extends PositionComponent
 
   double getNextBlinkIn() => 4 + 4 * Random().nextDouble();
 
-  late final Timer _testTimer;
-
   bool _lookingAtLeft = true;
 
   @override
   void onLoad() {
     super.onLoad();
-    _testTimer = Timer(
-      2.0,
-      onTick: () {
-        if (parent.currentPhase is! IdlePhase) {
-          return;
-        }
-        _fire();
-      },
-      repeat: true,
-      autoStart: true,
-    );
     addAll([
       mainLogo = FlameSmallLogo(
         color: authorColor,
@@ -185,15 +196,8 @@ class FlameAuthorUI extends PositionComponent
   }
 
   @override
-  void onTapDown(TapDownEvent event) {
-    _fire();
-    super.onTapDown(event);
-  }
-
-  @override
   void update(double dt) {
     super.update(dt);
-    _testTimer.update(dt);
     _leftEye.position = Vector2(size.x * 0.22, size.y * 0.685);
     _rightEye.position = Vector2(size.x * 0.44, size.y * 0.685);
     nextBlinkIn -= dt;
@@ -208,7 +212,7 @@ class FlameAuthorUI extends PositionComponent
     nextBlinkIn = getNextBlinkIn();
   }
 
-  void _fire() {
+  void _fire(double fireSize) {
     final bigFlame = game.findByKeyName(BigFlame.keyName) as BigFlame;
     final targetPos = bigFlame.getRandomPointToFire();
     add(AuthorShakeAndReleaseEffect(
@@ -217,7 +221,7 @@ class FlameAuthorUI extends PositionComponent
         game.world.add(FlameFireball(
           position: absolutePositionOfAnchor(const Anchor(0.5, 0.9)),
           target: targetPos,
-          size: Vector2.all(22),
+          size: Vector2.all(fireSize),
           speed: 200,
           priority: priority + 1,
         ));
