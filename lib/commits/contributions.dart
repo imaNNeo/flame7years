@@ -512,7 +512,7 @@ ContributionDataEntity loadCommunityData() {
   final commitsData = <String, List<int>>{};
 
   final parts = lines[0].split(',');
-  final names = parts.sublist(1);
+  final names = parts.sublist(1).map((name) => name.trim()).toList();
   for (final name in names) {
     commitsData[name] = [];
   }

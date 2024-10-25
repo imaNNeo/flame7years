@@ -9,10 +9,11 @@ import 'package:flame7years/components/timeline/timeline_observer.dart';
 import 'commits/contributions.dart';
 import 'components/animationphases/animation_phase.dart';
 import 'components/animationphases/phase_manager.dart';
+import 'components/author/flame_top_author.dart';
 import 'components/background.dart';
 import 'components/big_flame.dart';
 import 'components/fire_area.dart';
-import 'components/author/flame_author.dart';
+import 'components/flame_community_author.dart';
 import 'components/timeline/timeline_manager.dart';
 import 'flame7game.dart';
 import 'package:flame/components.dart';
@@ -33,12 +34,14 @@ class Flame7World extends World
 
   late final BigFlame bigFlame;
 
-  final Map<String, FlameAuthor> topAliveAuthors = {};
+  final Map<String, FlameTopAuthor> topAliveAuthors = {};
   late final String firstAuthorName;
 
   RectangleComponent? _tempBottomRect;
 
-  FlameAuthor get firstAuthor => topAliveAuthors[firstAuthorName]!;
+  FlameTopAuthor get firstAuthor => topAliveAuthors[firstAuthorName]!;
+
+  FlameCommunityAuthor? flameCommunityAuthor;
 
   List<Vector2> topAuthorsAvailableSlots = [
     Vector2(220, -225),
@@ -59,7 +62,7 @@ class Flame7World extends World
     add(Background());
     final firstAuthor = communityData.topAuthors.first;
     firstAuthorName = firstAuthor.name;
-    add(topAliveAuthors[firstAuthorName] = FlameAuthor(
+    add(topAliveAuthors[firstAuthorName] = FlameTopAuthor(
       position: Vector2(0, -400),
       isFirstAuthor: true,
       authorEntity: firstAuthor,
@@ -152,6 +155,7 @@ class Flame7World extends World
   @override
   void onDateChanged(ContributionDataEntity data, int dateIndex) {
     _tryToAddNewAuthors(data, dateIndex);
+    _tryToAddCommunityAuthor(data, dateIndex);
   }
 
   void _tryToAddNewAuthors(ContributionDataEntity data, int dateIndex) {
@@ -171,11 +175,27 @@ class Flame7World extends World
       final slot = topAuthorsAvailableSlots.removeAt(
         Random().nextInt(topAuthorsAvailableSlots.length),
       );
-      add(topAliveAuthors[author.name] = FlameAuthor(
+      add(topAliveAuthors[author.name] = FlameTopAuthor(
         position: slot,
         authorEntity: author,
       ));
     }
+  }
+
+  void _tryToAddCommunityAuthor(ContributionDataEntity data, int dateIndex) {
+    if (flameCommunityAuthor != null) {
+      return;
+    }
+
+    final author = data.community;
+    final nextDayCommits =
+        author.commits[min(dateIndex + 1, author.commits.length - 1)];
+    if (nextDayCommits <= 0) {
+      return;
+    }
+    add(flameCommunityAuthor = FlameCommunityAuthor(
+      entity: data.community,
+    ));
   }
 }
 

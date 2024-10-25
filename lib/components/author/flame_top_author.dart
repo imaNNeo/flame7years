@@ -19,9 +19,18 @@ import 'package:flutter/material.dart';
 
 import 'effects/author_charging_shake_effect.dart';
 
-class FlameAuthor extends PositionComponent
+double squeezeValue(
+  double value,
+  double min,
+  double max,
+  double newMin,
+  double newMax,
+) =>
+    ((value - min) / (max - min)) * (newMax - newMin) + newMin;
+
+class FlameTopAuthor extends PositionComponent
     with PhaseObserver, HasGameRef<Flame7Game>, TimelineObserver {
-  FlameAuthor({
+  FlameTopAuthor({
     required Vector2 position,
     required this.authorEntity,
     this.isFirstAuthor = false,
@@ -47,6 +56,7 @@ class FlameAuthor extends PositionComponent
   void onLoad() {
     add(_ui = FlameAuthorUI(
       position: Vector2.zero(),
+      isFirstAuthor: isFirstAuthor,
     ));
     size = _ui.size;
     anchor = _ui.anchor;
@@ -118,7 +128,7 @@ class FlameAuthor extends PositionComponent
   void onDateChanged(ContributionDataEntity data, int dateIndex) {
     final commitsForThisDay = authorEntity.commits[dateIndex];
     if (commitsForThisDay > 0) {
-      final fireSize = squeezeCommitCount(
+      final fireSize = squeezeValue(
             commitsForThisDay.toDouble(),
             authorEntity.minCommits.toDouble(),
             authorEntity.maxCommits.toDouble(),
@@ -126,22 +136,13 @@ class FlameAuthor extends PositionComponent
             2.0,
           ) *
           20;
-      _ui._fire(fireSize);
+      _ui.fire(fireSize);
     }
   }
-
-  double squeezeCommitCount(
-    double count,
-    double min,
-    double max,
-    double newMin,
-    double newMax,
-  ) =>
-      ((count - min) / (max - min)) * (newMax - newMin) + newMin;
 }
 
 class FlameAuthorUI extends PositionComponent
-    with HasGameRef<Flame7Game>, ParentIsA<FlameAuthor> {
+    with HasGameRef<Flame7Game>, ParentIsA<PositionComponent> {
   static const _ratio = 89 / 122;
 
   static const _largeScale = 1.75;
@@ -149,6 +150,7 @@ class FlameAuthorUI extends PositionComponent
   FlameAuthorUI({
     double width = 60,
     required Vector2 position,
+    this.isFirstAuthor = false,
     this.authorColor = Colors.white,
   }) : super(
           size: Vector2(width, width / _ratio),
@@ -160,6 +162,7 @@ class FlameAuthorUI extends PositionComponent
   late final FlameAuthorEye _leftEye, _rightEye;
   final ui.Color authorColor;
   late double nextBlinkIn;
+  final bool isFirstAuthor;
 
   late final FlameSmallLogo mainLogo;
   late final FlameSmallLogo overlayLogo;
@@ -212,7 +215,7 @@ class FlameAuthorUI extends PositionComponent
     nextBlinkIn = getNextBlinkIn();
   }
 
-  void _fire(double fireSize) {
+  void fire(double fireSize) {
     final bigFlame = game.findByKeyName(BigFlame.keyName) as BigFlame;
     final targetPos = bigFlame.getRandomPointToFire();
     add(AuthorShakeAndReleaseEffect(
@@ -281,13 +284,13 @@ class FlameAuthorUI extends PositionComponent
   }
 
   void _runSpawnAnimation() {
-    if (parent.isFirstAuthor) {
+    if (isFirstAuthor) {
       _refreshLookingDirection(true);
     } else {
       _refreshLookingDirection(parent.position.x > 0);
     }
     add(ScaleEffect.to(
-      parent.isFirstAuthor ? Vector2.all(_largeScale) : _normalScale,
+      isFirstAuthor ? Vector2.all(_largeScale) : _normalScale,
       EffectController(
         duration: 0.6,
         curve: Curves.bounceOut,
@@ -323,7 +326,7 @@ class FlameAuthorUI extends PositionComponent
   Vector2 get _normalScale => Vector2(_lookingAtLeft ? 1.0 : -1.0, 1.0);
 
   void onPhaseChanged(AnimationPhase phase) {
-    if (!parent.isFirstAuthor) {
+    if (!isFirstAuthor) {
       return;
     }
     switch (phase) {
