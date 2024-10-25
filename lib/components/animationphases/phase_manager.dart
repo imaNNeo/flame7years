@@ -18,7 +18,7 @@ mixin PhaseManager on Component {
     allPhases = [
       StartPhase(
         initialPosition: Vector2(0, -400),
-        duration: 2,
+        duration: 5,
         initialCameraZoom: 1.5,
       ),
       MovingToTheLogoLeftPhase(

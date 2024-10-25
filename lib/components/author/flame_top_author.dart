@@ -18,6 +18,7 @@ import 'package:flame7years/main.dart';
 import 'package:flutter/material.dart';
 
 import 'effects/author_charging_shake_effect.dart';
+import 'lets_go_text.dart';
 
 double squeezeValue(
   double value,
@@ -307,7 +308,8 @@ class FlameAuthorUI extends PositionComponent
       ),
       onComplete: () async {
         if (isFirstAuthor) {
-          await Future.delayed(const Duration(milliseconds: 500));
+          parent.add(LetsGoText());
+          await Future.delayed(const Duration(milliseconds: 400));
           _blink();
         }
       },
