@@ -71,6 +71,7 @@ class Flame7World extends World
     for (final point in allBigFlamePoints) {
       _pointsIntensity[point] = 0.0;
     }
+    game.camera.moveTo(topAliveAuthors[firstAuthorName]!.position);
   }
 
   void addFireArea(Vector2 position, double radius, double initialIntensity) {
