@@ -119,22 +119,23 @@ class Flame7World extends World
   void _zoomCameraToOriginalPosition({
     double startDelay = 0.0,
     double duration = 1.0,
-  }) => gameRef.camera.viewfinder.addAll([
-    ScaleEffect.to(
-      Vector2.all(0.8),
-      EffectController(
-        duration: duration,
-        startDelay: startDelay,
-      ),
-    ),
-    MoveToEffect(
-      Vector2.zero(),
-      EffectController(
-        duration: duration,
-        startDelay: startDelay,
-      ),
-    ),
-  ]);
+  }) =>
+      gameRef.camera.viewfinder.addAll([
+        ScaleEffect.to(
+          Vector2.all(0.8),
+          EffectController(
+            duration: duration,
+            startDelay: startDelay,
+          ),
+        ),
+        MoveToEffect(
+          Vector2.zero(),
+          EffectController(
+            duration: duration,
+            startDelay: startDelay,
+          ),
+        ),
+      ]);
 
   @override
   void onPhaseChanged(AnimationPhase phase) {
@@ -194,6 +195,7 @@ class Flame7World extends World
         _zoomCameraToOriginalPosition(
           startDelay: viewTextDuration,
         );
+      case ShowFirstYearAnimationPhase():
       case MovingToTheMainPositionPhase():
       case IdlePhase():
     }

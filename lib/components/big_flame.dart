@@ -397,6 +397,7 @@ class BigFlame extends PositionComponent
           clipXPercent = _flameLogoXPercent;
         });
         break;
+      case ShowFirstYearAnimationPhase():
       case StartPhase():
       case MovingToTheLogoLeftPhase():
       case ShowingStartInfoPhase():

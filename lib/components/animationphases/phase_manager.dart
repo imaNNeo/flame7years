@@ -18,7 +18,7 @@ mixin PhaseManager on Component {
     allPhases = [
       StartPhase(
         initialPosition: Vector2(0, -400),
-        duration: 5,
+        duration: 4.0,
         initialCameraZoom: 1.5,
       ),
       MovingToTheLogoLeftPhase(
@@ -40,7 +40,10 @@ mixin PhaseManager on Component {
         moveSpeed: 100,
       ),
       ShowingStartInfoPhase(
-        duration: 20,
+        duration: 19,
+      ),
+      ShowFirstYearAnimationPhase(
+        duration: 2.0,
       ),
       IdlePhase(duration: 999999),
     ];

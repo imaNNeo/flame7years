@@ -57,7 +57,7 @@ class LetsGoText extends Component
     _refreshTextsWithOpacity(0.0);
     add(SequenceEffect([
       OpacityEffect.to(1.0, EffectController(duration: 0.3)),
-      OpacityEffect.to(0.0, EffectController(duration: 0.3, startDelay: 3.5)),
+      OpacityEffect.to(0.0, EffectController(duration: 0.3, startDelay: 2.5)),
       RemoveEffect(),
     ]));
   }

@@ -71,6 +71,12 @@ class ShowingStartInfoPhase extends AnimationPhase {
   });
 }
 
+class ShowFirstYearAnimationPhase extends AnimationPhase {
+  ShowFirstYearAnimationPhase({
+    required super.duration,
+  });
+}
+
 class IdlePhase extends AnimationPhase {
   IdlePhase({
     required super.duration,

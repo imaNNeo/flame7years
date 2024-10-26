@@ -100,6 +100,7 @@ class FlameTopAuthor extends PositionComponent
           _movingTarget = phase.mainPosition;
           moveSpeed = phase.moveSpeed;
         }
+      case ShowFirstYearAnimationPhase():
       case IdlePhase():
         _name.text = authorEntity.name;
       case ShowingStartInfoPhase():
@@ -367,6 +368,7 @@ class FlameAuthorUI extends PositionComponent
         parent.add(StartInfoText(
           duration: phase.duration,
         ));
+      case ShowFirstYearAnimationPhase():
       case IdlePhase():
       case MovingToTheLogoLeftPhase():
     }
