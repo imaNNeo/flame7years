@@ -32,6 +32,8 @@ class Flame7World extends World
   late final String firstAuthorName;
 
   RectangleComponent? _tempBottomRect;
+  RectangleComponent? _tempLeftRect;
+  RectangleComponent? _tempRightRect;
 
   FlameTopAuthor get firstAuthor => topAliveAuthors[firstAuthorName]!;
 
@@ -54,6 +56,29 @@ class Flame7World extends World
     ..shader = Gradient.linear(
       const Offset(0, 0),
       const Offset(0, 200),
+      [
+        const Color(0x00000000),
+        const Color(0xFF000000),
+      ],
+    );
+
+  final leftGradient = Paint()
+    ..shader = Gradient.linear(
+        const Offset(70, 0),
+        const Offset(0, 0),
+        [
+          const Color(0x00000000),
+          const Color(0xFF000000),
+        ],
+        [
+          0.1,
+          0.7,
+        ]
+    );
+  final rightGradient = Paint()
+    ..shader = Gradient.linear(
+      const Offset(0, 0),
+      const Offset(70, 0),
       [
         const Color(0x00000000),
         const Color(0xFF000000),
@@ -161,11 +186,23 @@ class Flame7World extends World
         ));
       case MovingToTheLogoLeftPhase():
         camera.follow(firstAuthor);
+        add(_tempRightRect = RectangleComponent(
+          position: Vector2.zero(),
+          size: Vector2(100, 800),
+          paint: rightGradient,
+          anchor: Anchor.centerRight,
+        ));
       case ShowingTheFlameLogoPhase():
         _tempBottomRect?.removeFromParent();
         camera.stop();
       case MovingToTheLogoRightPhase():
         _zoomCameraToOriginalPosition();
+        add(_tempLeftRect = RectangleComponent(
+          position: Vector2.zero(),
+          size: Vector2(100, 800),
+          paint: leftGradient,
+          anchor: Anchor.centerLeft,
+        ));
       case ShowingStartInfoPhase():
         camera.viewfinder.addAll([
           ScaleEffect.to(
@@ -190,6 +227,7 @@ class Flame7World extends World
           startDelay: viewTextDuration,
         );
       case ShowFirstYearAnimationPhase():
+        _tempLeftRect?.removeFromParent();
       case MovingToTheMainPositionPhase():
       case IdlePhase():
     }
@@ -250,6 +288,9 @@ class Flame7World extends World
   void update(double dt) {
     super.update(dt);
     timelineUI.position = Vector2(game.size.x / 2, 40);
+    final camera = gameRef.camera;
+    _tempLeftRect?.position.x = camera.visibleWorldRect.left -10;
+    _tempRightRect?.position.x = camera.visibleWorldRect.right + 10;
   }
 }
 
