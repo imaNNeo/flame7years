@@ -8,7 +8,7 @@ mixin TimelineManager on Component {
   late Flame7Game game;
 
   late final double totalDuration;
-  static const double eachStepDuration = 0.3;
+  static const double eachStepDuration = 1.3;
 
   ContributionDataEntity get contributionData => game.communityData;
 
