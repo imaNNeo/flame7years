@@ -27,7 +27,7 @@ class LetsGoText extends Component
     _text2.textRenderer = TextPaint(
       style: TextStyle(
         color: _color2.withOpacity(opacity),
-        fontSize: 14.2,
+        fontSize: 14.6,
         fontWeight: FontWeight.bold,
       ),
     );
@@ -49,7 +49,7 @@ class LetsGoText extends Component
         anchor: Anchor.centerRight,
       ),
       _text2 = TextComponent(
-        text: "something cool",
+        text: "something hot!",
         position: Vector2(-parent.size.x / 2, parent.size.y * 0.78 + 10),
         anchor: Anchor.centerRight,
       ),
