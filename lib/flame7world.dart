@@ -50,6 +50,16 @@ class Flame7World extends World
   ];
   late TimelineUI timelineUI;
 
+  final bottomGradient = Paint()
+    ..shader = Gradient.linear(
+      const Offset(0, 0),
+      const Offset(0, 200),
+      [
+        const Color(0x00000000),
+        const Color(0xFF000000),
+      ],
+    );
+
   @override
   void onLoad() async {
     super.onLoad();
@@ -147,15 +157,7 @@ class Flame7World extends World
         camera.viewport.add(_tempBottomRect = RectangleComponent(
           position: Vector2(0, 600),
           size: Vector2(800, 200),
-          paint: Paint()
-            ..shader = Gradient.linear(
-              const Offset(0, 0),
-              const Offset(0, 200),
-              [
-                const Color(0x00000000),
-                const Color(0xFF000000),
-              ],
-            ),
+          paint: bottomGradient,
         ));
       case MovingToTheLogoLeftPhase():
         camera.follow(firstAuthor);
@@ -178,15 +180,7 @@ class Flame7World extends World
         camera.viewport.add(_tempBottomRect = RectangleComponent(
           position: Vector2(0, 600),
           size: Vector2(800, 200),
-          paint: Paint()
-            ..shader = Gradient.linear(
-              const Offset(0, 0),
-              const Offset(0, 200),
-              [
-                const Color(0x00000000),
-                const Color(0xFF000000),
-              ],
-            ),
+          paint: bottomGradient,
         ));
         final viewTextDuration = phase.duration;
         _tempBottomRect!.add(RemoveEffect(

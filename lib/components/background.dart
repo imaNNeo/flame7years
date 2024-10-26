@@ -10,6 +10,15 @@ class Background extends PositionComponent with HasGameRef {
     this.interval = 40,
   });
 
+  final orangePaint = Paint()
+    ..color = orangeColor.withOpacity(0.3)
+    ..strokeWidth = 1;
+
+  final redPaint = Paint()..color = redColor.withOpacity(0.2);
+
+  final paint1 = Paint();
+  final paint2 = Paint();
+
   @override
   void onLoad() {
     super.onLoad();
@@ -20,32 +29,29 @@ class Background extends PositionComponent with HasGameRef {
   @override
   void render(Canvas canvas) {
     super.render(canvas);
-    final paint = Paint()
-      ..color = orangeColor.withOpacity(0.3)
-      ..strokeWidth = 1;
     canvas.drawCircle(
       Offset(size.x / 2, size.y / 2),
       size.x / 2,
-      Paint()..color = redColor.withOpacity(0.2),
+      redPaint,
     );
     for (var i = 1; i < size.x / interval; i++) {
       canvas.drawLine(
         Offset(i * interval, 0),
         Offset(i * interval, size.y),
-        paint,
+        orangePaint,
       );
     }
     for (var i = 1; i < size.y / interval; i++) {
       canvas.drawLine(
         Offset(0, i * interval),
         Offset(size.x, i * interval),
-        paint,
+        orangePaint,
       );
     }
     canvas.drawCircle(
       Offset(size.x / 2, size.y / 2),
       size.x / 2,
-      Paint()
+      paint1
         ..shader = ui.Gradient.radial(
           Offset(size.x / 2, size.y / 2),
           size.x / 2,
@@ -55,7 +61,7 @@ class Background extends PositionComponent with HasGameRef {
     canvas.drawCircle(
       Offset(size.x / 2, size.y / 2),
       size.x / 1,
-      Paint()
+      paint2
         ..color = Colors.black
         ..strokeWidth = size.x
         ..style = PaintingStyle.stroke,

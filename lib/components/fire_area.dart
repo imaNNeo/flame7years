@@ -20,10 +20,12 @@ class FireArea extends PositionComponent {
 
   final int id;
   double _currentIntensity = 0.0;
+
   double get intensity => _currentIntensity;
   void Function(FireArea value, double diff)? onIntensityChanged;
   List<BigFlamePoint> containingPoints;
 
+  final paint = Paint()..style = PaintingStyle.fill;
 
   @override
   void render(Canvas canvas) {
@@ -37,8 +39,7 @@ class FireArea extends PositionComponent {
         size.y / 2,
       ),
       size.x / 2,
-      Paint()
-        ..style = PaintingStyle.fill
+      paint
         ..shader = RadialGradient(
           colors: [
             orangeColor2.withOpacity(0),

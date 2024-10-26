@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
@@ -33,6 +32,26 @@ class BigFlame extends PositionComponent
   double clipXPercent = 0.0;
 
   double baseIntensity = 0.0;
+
+  final _circlePaint = Paint();
+
+  final _arcPaint = Paint();
+
+  final _sparklePaint = Paint();
+
+  final _logoPaint = Paint()
+    ..color = Colors.white
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 6
+    ..strokeCap = StrokeCap.round
+    ..strokeJoin = StrokeJoin.round;
+
+  final _textPaint = Paint()
+    ..color = Colors.white
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 6;
+
+  final _redPaint = Paint();
 
   @override
   void onLoad() {
@@ -145,7 +164,7 @@ class BigFlame extends PositionComponent
                     canvas.drawCircle(
                       Offset.zero,
                       size,
-                      Paint()
+                      _circlePaint
                         ..color = color.withOpacity(
                           reverseProgress,
                         ),
@@ -160,7 +179,7 @@ class BigFlame extends PositionComponent
                       flameAngle,
                       1 * pi,
                       false,
-                      Paint()
+                      _arcPaint
                         ..color = color.withOpacity(reverseProgress)
                         ..strokeWidth = size
                         ..style = PaintingStyle.stroke,
@@ -170,7 +189,7 @@ class BigFlame extends PositionComponent
                     canvas.drawCircle(
                       Offset.zero,
                       2,
-                      Paint()
+                      _sparklePaint
                         ..color = orangeColor.withOpacity(
                           reverseProgress,
                         ),
@@ -188,19 +207,6 @@ class BigFlame extends PositionComponent
     canvas.save();
     canvas.clipRect(Rect.fromLTWH(0, 0, size.x * clipXPercent, size.y));
     canvas.scale(size.x / 994, size.y / 321);
-
-    final paint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 6
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    final textPaint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 6;
-
     // Logo
     final path1 = Path()
       ..moveTo(63.2734, 170.189)
@@ -209,14 +215,14 @@ class BigFlame extends PositionComponent
       ..cubicTo(142.52, 221.262, 130.629, 232.845, 114.392, 243.951)
       ..cubicTo(97.4615, 230.432, 81.4855, 213.231, 71.2065, 191.851)
       ..cubicTo(67.9045, 184.982, 65.2994, 177.695, 63.2734, 170.189);
-    canvas.drawPath(path1, paint);
+    canvas.drawPath(path1, _logoPaint);
 
     final path2 = Path()
       ..moveTo(114.394, 243.948)
       ..cubicTo(201.871, 184.112, 163.181, 110.535, 163.181, 110.535)
       ..cubicTo(163.181, 110.535, 230.044, 197.073, 183.724, 282.158)
       ..cubicTo(183.724, 282.158, 142.26, 266.199, 114.394, 243.948);
-    canvas.drawPath(path2, paint);
+    canvas.drawPath(path2, _logoPaint);
 
     final path3 = Path()
       ..moveTo(27.5888, 290.088)
@@ -226,7 +232,7 @@ class BigFlame extends PositionComponent
       ..cubicTo(98.4038, 248.421, 164.372, 275.138, 183.474, 282.498)
       ..cubicTo(162.634, 303.948, 134.605, 317.852, 102.365, 317.852)
       ..cubicTo(73.8058, 317.852, 47.6708, 307.389, 27.5888, 290.088);
-    canvas.drawPath(path3, paint);
+    canvas.drawPath(path3, _logoPaint);
 
     // F
     final textPath1 = Path()
@@ -243,7 +249,7 @@ class BigFlame extends PositionComponent
       ..cubicTo(264.745, 129.248, 274.104, 119.888, 300.546, 119.888)
       ..lineTo(374.487, 119.888)
       ..lineTo(374.487, 148.903);
-    canvas.drawPath(textPath1, textPaint);
+    canvas.drawPath(textPath1, _textPaint);
 
     // L
     final textPath2 = Path()
@@ -256,7 +262,7 @@ class BigFlame extends PositionComponent
       ..cubicTo(432.795, 253.498, 437.943, 257.476, 453.386, 257.476)
       ..lineTo(502.993, 257.476)
       ..lineTo(502.993, 286.491);
-    canvas.drawPath(textPath2, textPaint);
+    canvas.drawPath(textPath2, _textPaint);
     // A
     final textPath3 = Path()
       ..moveTo(569.724, 264.73)
@@ -275,7 +281,7 @@ class BigFlame extends PositionComponent
       ..lineTo(528.775, 286.491)
       ..lineTo(562.704, 286.491)
       ..lineTo(569.724, 264.73);
-    canvas.drawPath(textPath3, textPaint);
+    canvas.drawPath(textPath3, _textPaint);
     // M
     final textPath4 = Path()
       ..moveTo(822.25, 187.044)
@@ -293,7 +299,7 @@ class BigFlame extends PositionComponent
       ..lineTo(854.775, 286.491)
       ..lineTo(822.25, 286.491)
       ..lineTo(822.25, 187.044);
-    canvas.drawPath(textPath4, textPaint);
+    canvas.drawPath(textPath4, _textPaint);
     // E
     final textPath5 = Path()
       ..moveTo(990.3, 286.491)
@@ -311,7 +317,7 @@ class BigFlame extends PositionComponent
       ..cubicTo(913.083, 253.498, 918.23, 257.476, 933.674, 257.476)
       ..lineTo(990.3, 257.476)
       ..lineTo(990.3, 286.491);
-    canvas.drawPath(textPath5, textPaint);
+    canvas.drawPath(textPath5, _textPaint);
     canvas.restore();
 
     for (final point in showingPoints) {
@@ -319,7 +325,7 @@ class BigFlame extends PositionComponent
       canvas.drawCircle(
         localPosition.toOffset(),
         4,
-        Paint()
+        _redPaint
           ..color = Colors.red.withOpacity(
             parent.getBigFlamePointIntensity(point).clamp(0, 1),
           ),

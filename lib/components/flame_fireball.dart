@@ -25,6 +25,10 @@ class FlameFireball extends PositionComponent with ParentIsA<Flame7World> {
   double addParticleEvery = 0.04;
   double lastParticle = 0.0;
 
+  final orangePaint = Paint()..color = orangeColor;
+
+  final redPaint = Paint()..color = redColor;
+
   @override
   void onLoad() {
     super.onLoad();
@@ -97,12 +101,12 @@ class FlameFireball extends PositionComponent with ParentIsA<Flame7World> {
     canvas.drawCircle(
       Offset(size.x / 2, size.y / 2),
       size.x * 0.54,
-      Paint()..color = orangeColor,
+      orangePaint,
     );
     canvas.drawCircle(
       Offset(size.x / 2, size.y / 2),
       size.x * 0.5,
-      Paint()..color = redColor,
+      redPaint,
     );
   }
 }

@@ -30,6 +30,11 @@ class FlameCommunityAuthor extends PositionComponent with TimelineObserver {
   late final TextComponent _name;
   int _currentShowingNameCounter = -1;
 
+  final orangePaint = Paint()
+    ..color = orangeColor
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 2;
+
   void changeCommunityMemberName(String name) {
     _name.text = name;
   }
@@ -95,10 +100,7 @@ class FlameCommunityAuthor extends PositionComponent with TimelineObserver {
     canvas.drawCircle(
       (size / 2).toOffset(),
       size.x / 2,
-      Paint()
-        ..color = orangeColor
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2,
+      orangePaint,
     );
   }
 

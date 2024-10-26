@@ -395,6 +395,13 @@ class FlameAuthorEye extends PositionComponent with ParentIsA<FlameAuthorUI> {
           anchor: Anchor.center,
         );
 
+  final paint = Paint()
+    ..color = redColor
+    ..strokeWidth = 3
+    ..strokeCap = StrokeCap.round
+    ..strokeJoin = StrokeJoin.round
+    ..style = PaintingStyle.stroke;
+
   @override
   void update(double dt) {
     super.update(dt);
@@ -404,13 +411,6 @@ class FlameAuthorEye extends PositionComponent with ParentIsA<FlameAuthorUI> {
   @override
   void render(Canvas canvas) {
     if (parent.showHappyFace) {
-      final paint = Paint()
-        ..color = redColor
-        ..strokeWidth = 3
-        ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round
-        ..style = PaintingStyle.stroke;
-
       final height = size.y * 0.3;
       canvas.drawLine(
         Offset(0, height),
