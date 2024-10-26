@@ -151,7 +151,10 @@ class FlameTopAuthor extends PositionComponent
 }
 
 class FlameAuthorUI extends PositionComponent
-    with HasGameRef<Flame7Game>, ParentIsA<PositionComponent> {
+    with
+        HasGameRef<Flame7Game>,
+        ParentIsA<PositionComponent>,
+        TimelineObserver {
   static const _ratio = 89 / 122;
 
   static const _largeScale = 1.75;
@@ -188,6 +191,8 @@ class FlameAuthorUI extends PositionComponent
 
   Vector2? _positionBeforeFirstFire;
 
+  bool showHappyFace = false;
+
   @override
   void onLoad() {
     super.onLoad();
@@ -221,6 +226,9 @@ class FlameAuthorUI extends PositionComponent
   }
 
   void _blink() {
+    if (showHappyFace) {
+      return;
+    }
     _leftEye.blink();
     _rightEye.blink();
     nextBlinkIn = getNextBlinkIn();
@@ -373,6 +381,12 @@ class FlameAuthorUI extends PositionComponent
       case MovingToTheLogoLeftPhase():
     }
   }
+
+  @override
+  void onDateChanged(
+      ContributionDataEntity data, int dateIndex, int year, int month) {
+    showHappyFace = dateIndex >= data.dates.length - 2;
+  }
 }
 
 class FlameAuthorEye extends PositionComponent with ParentIsA<FlameAuthorUI> {
@@ -389,17 +403,41 @@ class FlameAuthorEye extends PositionComponent with ParentIsA<FlameAuthorUI> {
 
   @override
   void render(Canvas canvas) {
-    canvas.drawRect(
-      Rect.fromCenter(
-        center: Offset(size.x / 2, size.y / 2),
-        width: size.x,
-        height: size.y,
-      ),
-      Paint()..color = redColor,
-    );
+    if (parent.showHappyFace) {
+      final paint = Paint()
+        ..color = redColor
+        ..strokeWidth = 3
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round
+        ..style = PaintingStyle.stroke;
+
+      final height = size.y * 0.3;
+      canvas.drawLine(
+        Offset(0, height),
+        Offset(size.x / 2, 0),
+        paint,
+      );
+      canvas.drawLine(
+        Offset(size.x / 2, 0),
+        Offset(size.x, height),
+        paint,
+      );
+    } else {
+      canvas.drawRect(
+        Rect.fromCenter(
+          center: Offset(size.x / 2, size.y / 2),
+          width: size.x,
+          height: size.y,
+        ),
+        Paint()..color = redColor,
+      );
+    }
   }
 
   void blink() {
+    if (!parent.showHappyFace) {
+      return;
+    }
     add(
       ScaleEffect.to(
         Vector2(1, 0),
