@@ -8,6 +8,12 @@ This simulation visualizes the contributions of the [top 100 contributors](https
 
 https://gist.github.com/user-attachments/assets/1f3f8670-0db6-414f-acd2-ed7a69f9647c
 
+<div align="center">
+    <a href="https://youtu.be/ZpMa83SyNZ0">Watch in Full 4K on YouTube:</a>
+</div>
+
+--- 
+
 ### ✨ Features
 - **Real Contribution Data**: The simulation is based on [actual contribution data](https://github.com/flame-engine/flame/graphs/contributors) up to October 22, 2024.
 - **Dynamic Animation**: Fire orbs are thrown towards the Flame logo, each representing contributions over time.
