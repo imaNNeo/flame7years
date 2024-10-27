@@ -13,11 +13,6 @@ jobs:
       - name: Install Flutter
         uses: subosito/flutter-action@v2
 
-      - name: Set fl_chart Version
-        run: |
-          VERSION=$(grep "version:" pubspec.yaml | awk '{ print $2 }')
-          echo "USING_FL_CHART_VERSION=$VERSION" >> $GITHUB_ENV
-
       - uses: bluefireteam/flutter-gh-pages@v8
         with:
           workingDir: ./
