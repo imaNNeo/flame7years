@@ -1,7 +1,8 @@
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
 
-class FlameLargeLogo extends PositionComponent {
+class FlameLargeLogo extends PositionComponent with TapCallbacks {
   static const _ratio = 994 / 321;
 
   FlameLargeLogo({
@@ -10,6 +11,8 @@ class FlameLargeLogo extends PositionComponent {
     size: Vector2(width, width / _ratio),
     anchor: Anchor.center,
   );
+
+  List<Vector2> _points = [];
 
   @override
   void render(Canvas canvas) {
@@ -149,6 +152,21 @@ class FlameLargeLogo extends PositionComponent {
 
     // Restore canvas after scaling
     canvas.restore();
+
+    // Drawing the points (taps)
+    final pointPaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+    for (final point in _points) {
+      canvas.drawCircle(point.toOffset(), 4, pointPaint);
+    }
+  }
+
+  @override
+  void onTapDown(TapDownEvent event) {
+    super.onTapDown(event);
+    _points.add(event.localPosition);
+    print('Tapped at ${event.localPosition}');
   }
 
   @override
